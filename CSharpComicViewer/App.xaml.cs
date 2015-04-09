@@ -17,38 +17,36 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 
-using System;
-using System.Configuration;
-using System.Data;
 using System.Windows;
-using System.Xml;
+using System.Windows.Threading;
 using CSharpComicViewer.WPF;
 
+// ReSharper disable CSharpWarnings::CS1591
 namespace CSharpComicViewer
 {
-	/// <summary>
-	/// Interaction logic for App.xaml
-	/// </summary>
-	public partial class App : Application
+    internal partial class App
 	{
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Application.Startup"/> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.StartupEventArgs"/> that contains the event data.</param>
+	    public App()
+	    {
+	        Dispatcher.UnhandledException += OnUnhandledException;
+	    }
+
+	    private MainDisplay _mainWindow;
+
+	    private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+	    {
+	        if (_mainWindow != null)
+	        {
+	            _mainWindow.ApplicationExit(null, null); // KBR TODO hack: force configuration save on exception
+	        }
+	    }
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
-
-			if (e.Args.Length > 0)
-			{
-				var mainWindow = new CSharpComicViewer.WPF.MainDisplay(e.Args[0]);
-				mainWindow.Show();
-			}
-			else
-			{
-				var mainWindow = new CSharpComicViewer.WPF.MainDisplay(null);
-				mainWindow.Show();
-			}
+	        var initial = e.Args.Length > 0 ? e.Args[0] : null;
+            _mainWindow = new MainDisplay(initial);
+            _mainWindow.Show();
 		}
 	}
 }

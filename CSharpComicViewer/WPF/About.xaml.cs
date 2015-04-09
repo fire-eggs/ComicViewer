@@ -22,14 +22,13 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Markup;
 
 namespace CSharpComicViewer.WPF
 {
 	/// <summary>
 	/// Interaction logic for About.xaml
 	/// </summary>
-	public partial class About : Window
+	public partial class About
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="About"/> class.
@@ -50,7 +49,7 @@ namespace CSharpComicViewer.WPF
 		{
 			get
 			{
-				return ((AssemblyTitleAttribute)AssemblyTitleAttribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute))).Title;
+				return ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyTitleAttribute))).Title;
 			}
 		}
 
@@ -77,18 +76,18 @@ namespace CSharpComicViewer.WPF
 
 			if (source != null)
 			{
-				System.Diagnostics.Process.Start(source.NavigateUri.ToString());
+				Process.Start(source.NavigateUri.ToString());
 			}
 		}
 
 		/// <summary>
 		/// Gets the copyright.
 		/// </summary>
-		private string Copyright
+		public string Copyright
 		{
 			get
 			{
-				return ((AssemblyCopyrightAttribute)AssemblyCopyrightAttribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute))).Copyright;
+				return ((AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute))).Copyright;
 			}
 		}
 
@@ -107,7 +106,7 @@ namespace CSharpComicViewer.WPF
 		/// </summary>
 		private void SetDescription()
 		{
-			Description_TextBox.Text = ((AssemblyDescriptionAttribute)AssemblyDescriptionAttribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyDescriptionAttribute))).Description;
+			Description_TextBox.Text = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyDescriptionAttribute))).Description;
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace CSharpComicViewer.Configuration
 		/// <value>
 		///   <c>true</c> if height should be overridden; otherwise, <c>false</c>.
 		/// </value>
-		public bool OverideHeight { get; set; }
+		public bool OverrideHeight { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to override width.
@@ -59,7 +59,7 @@ namespace CSharpComicViewer.Configuration
 		/// <value>
 		///   <c>true</c> if width should be overridden; otherwise, <c>false</c>.
 		/// </value>
-		public bool OverideWidth { get; set; }
+		public bool OverrideWidth { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Configuration"/> is windowed.
@@ -68,5 +68,10 @@ namespace CSharpComicViewer.Configuration
 		///   <c>true</c> if windowed; otherwise, <c>false</c>.
 		/// </value>
 		public bool Windowed { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool DoublePage { get; set; }
 	}
 }

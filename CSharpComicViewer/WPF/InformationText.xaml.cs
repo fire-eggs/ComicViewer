@@ -17,19 +17,14 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 
-using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
 
 namespace CSharpComicViewer.WPF
 {
 	/// <summary>
-	/// Interaction logic for About.xaml
+	/// A window to display an embedded TEXT file from an archive
 	/// </summary>
-	public partial class InformationText : Window
+	public partial class InformationText
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InformationText"/> class.
@@ -48,7 +43,7 @@ namespace CSharpComicViewer.WPF
 		{
 			InitializeComponent();
 			Information_TextBox.Text = infoText;
-			this.Title = "Info text from: \"" + fileLocation + "\"";
+			Title = "Info text from: \"" + fileLocation + "\"";
 		}
 
 		/// <summary>
@@ -58,7 +53,7 @@ namespace CSharpComicViewer.WPF
 		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
 		private void Close_Click(object sender, RoutedEventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 	}
 }
