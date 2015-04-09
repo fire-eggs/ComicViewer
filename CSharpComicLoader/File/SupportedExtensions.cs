@@ -16,10 +16,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CSharpComicLoader.File
 {
@@ -30,7 +26,9 @@ namespace CSharpComicLoader.File
 	{
 		jpg,
 		bmp,
-		png
+		png,
+        jpeg,
+        gif
 	}
 
 	/// <summary>
@@ -42,6 +40,7 @@ namespace CSharpComicLoader.File
 		rar,
 		cbr,
 		cbz
+        // ,7z KBR TODO not syntactically correct
 	}
 
 	/// <summary>
@@ -49,6 +48,7 @@ namespace CSharpComicLoader.File
 	/// </summary>
 	public enum SupportedTextFiles
 	{
-		txt
+		txt,
+        nfo
 	}
 }

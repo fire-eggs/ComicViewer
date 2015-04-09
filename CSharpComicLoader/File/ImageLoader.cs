@@ -31,97 +31,50 @@ namespace CSharpComicLoader.File
 	public class ImageLoader : IFileLoader
 	{
 		/// <summary>
-		/// Gets or sets the total files (images).
-		/// </summary>
-		/// <value>
-		/// The total files.
-		/// </value>
-		public int TotalFiles { get; set; }
-
-
-		/// <summary>
-		/// Gets or sets the loaded files (images).
-		/// </summary>
-		/// <value>
-		/// The loaded files.
-		/// </value>
-		public int LoadedFiles { get; set; }
-
-		/// <summary>
 		/// Loads the comic book.
 		/// </summary>
 		/// <param name="files">The files.</param>
-		/// <returns></returns>
+		/// <returns>A ComicBook where the files are part of a single ComicFile.</returns>
 		public LoadedFilesData LoadComicBook(string[] files)
 		{
-			LoadedFiles = 0;
-			LoadedFilesData returnValue = new LoadedFilesData();
+			var returnValue = new LoadedFilesData();
 			returnValue.ComicBook = new ComicBook();
-			Comic.ComicFile comicFile = new Comic.ComicFile();
-
-			Array.Sort(files);
-			FileStream fs;
-			bool NextFile = false;
-
-			foreach (string image in files)
-			{
-				if (!System.IO.File.Exists(image))
-				{
-					returnValue.Error = "One or more images where not found";
-					return returnValue;
-				}
-			}
+			var comicFile = new ComicFile();
 
 			try
 			{
-				TotalFiles = files.Length;
 				foreach (string file in files)
 				{
-					//open archive
+                    if (!System.IO.File.Exists(file))
+                    {
+                        returnValue.Error = "One or more files could not be read, and were skipped";
+                        continue; // KBR just skip the file
+                    }
 
-					for (int x = 0; x < Enum.GetNames(typeof(SupportedImages)).Length; x++)
-					{
-						//if it is an image add it to array list
-						if (Utils.ValidateImageFileExtension(file))
-						{
+                    // KBR TODO wasn't this check already made?
+				    if (!Utils.ValidateImageFileExtension(file))
+                        continue; // KBR not a supported image extension, skip it
 
-							fs = System.IO.File.OpenRead(file);
-							fs.Position = 0;
-							try
-							{
-								byte[] b = new byte[fs.Length];
-								fs.Read(b, 0, b.Length);
-								comicFile.Add(b);
-							}
-							catch (Exception)
-							{
-								fs.Close();
-								returnValue.Error = "One or more files are corrupted, and where skipped";
-								return returnValue;
-							}
-							fs.Close();
-							NextFile = true;
-						}
-
-						if (NextFile)
-						{
-							NextFile = false;
-							x = Enum.GetNames(typeof(SupportedImages)).Length;
-						}
-					}
-
-					//Add a ComicFile
-					if (comicFile.Count > 0)
-					{
-						comicFile.Location = file;
-						returnValue.ComicBook.Add(comicFile);
-					}
-					comicFile = new ComicFile();
-					LoadedFiles++;
+                    using (var fs = System.IO.File.OpenRead(file))
+                    {
+                        try
+                        {
+                            var b = new byte[fs.Length];
+                            fs.Read(b, 0, b.Length);
+                            comicFile.Add(b);
+                        }
+                        catch (Exception)
+                        {
+                            // couldn't read the file, just skip it
+                            returnValue.Error = "One or more files could not be read, and were skipped";
+                        }
+                    }
 				}
 
 				//return the ComicBook on success
-				return returnValue;
+			    comicFile.Location = ""; // KBR TODO comicFile is now a collection of images, but each image needs to have its own location
+                returnValue.ComicBook.Add(comicFile);
+                return returnValue;
 			}
 			catch (Exception e)
 			{

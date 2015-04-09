@@ -17,154 +17,133 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CSharpComicLoader.Comic
 {
-	/// <summary>
-	/// A comic file object. This corresponds to an actual file, either an archive or an image.
-	/// </summary>
-	public class ComicFile : List<byte[]>
-	{
-		private byte[] _currentPage;
+    /// <summary>
+    /// A comic file object. This corresponds to an actual file, either an archive or an image.
+    /// </summary>
+    public class ComicFile : List<byte[]>
+    {
+        private int _currentIndex;
 
-		/// <summary>
-		/// Gets or sets the current page.
-		/// </summary>
-		/// <value>
-		/// The current page.
-		/// </value>
-		public byte[] CurrentPage
-		{
-			get
-			{
-				if (_currentPage == null && this.Count > 0)
-				{
-					_currentPage = this[0];
-				}
+        /// <summary>
+        /// Gets the current page.
+        /// </summary>
+        public byte[] CurrentPage { get { return this[_currentIndex]; } }
 
-				return _currentPage;
-			}
-			set
-			{
-				_currentPage = value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets the info text.
+        /// </summary>
+        /// <value>
+        /// The info text.
+        /// </value>
+        public string InfoText { get; set; }
 
-		/// <summary>
-		/// Gets or sets the info text.
-		/// </summary>
-		/// <value>
-		/// The info text.
-		/// </value>
-		public string InfoText { get; set; }
+        /// <summary>
+        /// Gets or sets the file location.
+        /// </summary>
+        /// <value>
+        /// The file location.
+        /// </value>
+        public string Location { get; set; }
 
-		/// <summary>
-		/// Gets or sets the file location.
-		/// </summary>
-		/// <value>
-		/// The file location.
-		/// </value>
-		public string Location { get; set; }
+        /// <summary>
+        /// Gets the name of the file.
+        /// </summary>
+        /// <value>
+        /// The name of the file.
+        /// </value>
+        public string FileName
+        {
+            get
+            {
+                string filePath = Location;
+                string[] filePathSplit = filePath.Split('\\');
+                string fileNameWithExtension = filePathSplit[filePathSplit.Length - 1];
+                return fileNameWithExtension;
+            }
+        }
 
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name { get; set; }
 
-		/// <summary>
-		/// Gets the name of the file.
-		/// </summary>
-		/// <value>
-		/// The name of the file.
-		/// </value>
-		public string FileName
-		{
-			get
-			{
-				string filePath = Location;
-				string[] filePathSplit = filePath.Split('\\');
-				string fileNameWithExtension = filePathSplit[filePathSplit.Length - 1];
-				return fileNameWithExtension;
-			}
-		}
+        /// <summary>
+        /// Gets the current page number.
+        /// </summary>
+        public int CurrentPageNumber { get { return _currentIndex + 1; } }
 
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		/// <value>
-		/// The name.
-		/// </value>
-		public string Name { get; set; }
+        /// <summary>
+        /// Gets the total pages.
+        /// </summary>
+        public int TotalPages { get { return Count; } }
 
-		/// <summary>
-		/// Gets the current page number.
-		/// </summary>
-		public int CurrentPageNumber
-		{
-			get
-			{
-				int result = this.Count > 0 ? 0 : -1;
+        /// <summary>
+        /// Gets the next page.
+        /// </summary>
+        /// <returns>The next page as byte[]</returns>
+        public byte[] NextPage()
+        {
+            if (_currentIndex + 1 >= Count)
+                return null;
+            _currentIndex++;
+            while (_currentIndex < Count) // TODO might be off-by-one?
+            {
+                byte[] tempPage = this[_currentIndex];
 
-				foreach (byte[] page in this)
-				{
-					if (page == CurrentPage)
-					{
-						result++;
-						break;
-					}
-					else
-					{
-						result++;
-					}
-				}
+                // Gon Vol 3 failed decompression of a page with zero bytes
+                if (tempPage != null && tempPage.Length > 1 && tempPage[0] != 0 && tempPage[1] != 0)
+                    return tempPage;
+                _currentIndex++;
+            }
+            return null;
+        }
 
-				return result;
-			}
-		}
+        /// <summary>
+        /// Get the previous page.
+        /// </summary>
+        /// <param name="doublePage"> </param>
+        /// <returns>The previous page as byte[]</returns>
+        public byte[] PreviousPage(bool doublePage)
+        {
+            if (CurrentPage == null)
+                return null;
 
-		/// <summary>
-		/// Gets the total pages.
-		/// </summary>
-		public int TotalPages
-		{
-			get
-			{
-				return this.Count;
-			}
-		}
+            // If not in doublepage mode, go back one page. If in double-page mode, we typically go back "3" pages
+            // (the "current page" is actually set to the second, or even-numbered page of the pair). Except if 
+            // somehow we're positioned on an odd-number page...
+            int decrement = doublePage ? 3 : 1;
+            if (CurrentPageNumber % 2 == 1 && doublePage)
+                decrement = 2;
 
-		/// <summary>
-		/// Gets the next page.
-		/// </summary>
-		/// <returns>The next page as byte[]</returns>
-		public byte[] NextPage()
-		{
-			byte[] result = null;
+            if (_currentIndex - decrement < 0)
+                return null;
+            _currentIndex -= decrement;
 
-			if (CurrentPage != null && CurrentPageNumber != TotalPages)
-			{
-				result = this[this.IndexOf(CurrentPage) + 1];
-				CurrentPage = result;
-			}
+            while (_currentIndex >= 0) // TODO might be off-by-one?
+            {
+                byte[] tempPage = this[_currentIndex];
 
-			return result;
-		}
+                // Gon Vol 3 failed decompression of a page with zero bytes
+                if (tempPage != null && tempPage.Length > 1 && tempPage[0] != 0 && tempPage[1] != 0)
+                    return tempPage;
+                _currentIndex--;
+            }
+            return null;
+        }
 
-		/// <summary>
-		/// Get the previous page.
-		/// </summary>
-		/// <returns>The previous page as byte[]</returns>
-		public byte[] PreviousPage()
-		{
-			byte[] result = null;
-
-			if (CurrentPage != null && CurrentPageNumber != 1)
-			{
-				result = this[this.IndexOf(CurrentPage) - 1];
-				CurrentPage = result;
-			}
-
-			return result;
-		}
-	}
+        public byte[] SetIndex(int pageIndex)
+        {
+            if (pageIndex < 0 || pageIndex >= Count)
+                return null;
+            _currentIndex = pageIndex;
+            return this[_currentIndex];
+        }
+    }
 }

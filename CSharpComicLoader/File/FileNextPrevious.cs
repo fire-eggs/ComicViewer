@@ -43,7 +43,7 @@ namespace CSharpComicLoader
 
 			int currentFileIndex = supportedFiles.IndexOf(currentFilePath);
 
-			if (currentFileIndex != -1 && currentFileIndex <= supportedFiles.Count)
+			if (currentFileIndex != -1 && currentFileIndex < (supportedFiles.Count-1))
 			{
 				returnValue = supportedFiles[currentFileIndex + 1];
 			}
@@ -66,7 +66,7 @@ namespace CSharpComicLoader
 
 			int currentFileIndex = supportedFiles.IndexOf(currentFilePath);
 
-			if (currentFileIndex != -1 && currentFileIndex != 0)
+			if (currentFileIndex > 0)
 			{
 				returnValue = supportedFiles[currentFileIndex - 1];
 			}

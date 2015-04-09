@@ -56,23 +56,23 @@ namespace CSharpComicLoader
 		/// Validates the image file extension.
 		/// </summary>
 		/// <param name="FilePath">The file path.</param>
-		/// <returns></returns>
+		/// <returns>true if the file extension is a supported image extension</returns>
 		public static bool ValidateImageFileExtension(string FilePath)
 		{
-			bool returnValue = false;
-
 			string[] supportedExtensions = Enum.GetNames(typeof(SupportedImages));
+		    string ext = System.IO.Path.GetExtension(FilePath);
+            if (string.IsNullOrEmpty(ext))
+                return false;
+            ext = ext.Substring(1).ToLower(); // skip the leading '.'
 
 			foreach (string extension in supportedExtensions)
 			{
-				if (FilePath.EndsWith("." + extension, StringComparison.OrdinalIgnoreCase))
+                if (extension.CompareTo(ext) == 0)
 				{
-					returnValue = true;
-					break;
+				    return true;
 				}
 			}
-
-			return returnValue;
+		    return false;
 		}
 
 		/// <summary>

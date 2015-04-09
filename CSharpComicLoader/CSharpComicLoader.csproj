@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -49,6 +50,7 @@
     <Compile Include="Bookmark.cs" />
     <Compile Include="Comic\ComicBook.cs" />
     <Compile Include="Comic\ComicFile.cs" />
+    <Compile Include="File\ArchiveLoadAsync.cs" />
     <Compile Include="File\ArchiveLoader.cs" />
     <Compile Include="File\FileNextPrevious.cs" />
     <Compile Include="File\ImageLoader.cs" />

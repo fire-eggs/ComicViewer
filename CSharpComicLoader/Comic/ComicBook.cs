@@ -17,10 +17,8 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CSharpComicLoader.Comic
 {
@@ -41,7 +39,7 @@ namespace CSharpComicLoader.Comic
 		{
 			get
 			{
-				if (_currentFile == null && this.Count > 0)
+				if (_currentFile == null && Count > 0)
 				{
 					_currentFile = this[0];
 				}
@@ -58,7 +56,7 @@ namespace CSharpComicLoader.Comic
 		{
 			get
 			{
-				return CurrentFile != null ? this.IndexOf(CurrentFile) + 1 : -1;
+				return CurrentFile != null ? IndexOf(CurrentFile) + 1 : -1;
 			}
 		}
 
@@ -69,34 +67,26 @@ namespace CSharpComicLoader.Comic
 		{
 			get
 			{
-				int result = this.Count > 0 ? 0 : -1;
+				int result = Count > 0 ? 0 : -1;
 
 				foreach (ComicFile file in this)
 				{
-					if (file == CurrentFile)
+				    if (file == CurrentFile)
 					{
 						foreach (byte[] page in file)
 						{
-							if (page == file.CurrentPage)
+                            result++;
+                            if (page == file.CurrentPage)
 							{
-								result++;
 								break;
 							}
-							else
-							{
-								result++;
-							}
 						}
-						break;
+					    break;
 					}
-					else
-					{
-						result += file.TotalPages;
-					}
-
+				    result += file.TotalPages;
 				}
 
-				return result;
+			    return result;
 			}
 		}
 
@@ -107,14 +97,7 @@ namespace CSharpComicLoader.Comic
 		{
 			get
 			{
-				int result = 0;
-
-				foreach (ComicFile file in this)
-				{
-					result += file.Count;
-				}
-
-				return result;
+			    return this.Sum(file => file.Count);
 			}
 		}
 
@@ -125,7 +108,7 @@ namespace CSharpComicLoader.Comic
 		{
 			get
 			{
-				return this.Count;
+				return Count;
 			}
 		}
 
@@ -142,12 +125,7 @@ namespace CSharpComicLoader.Comic
 				result = CurrentFile.NextPage();
 			}
 
-			if (result == null)
-			{
-				result = NextFile();
-			}
-
-			return result;
+		    return result ?? NextFile();
 		}
 
 		/// <summary>
@@ -160,9 +138,9 @@ namespace CSharpComicLoader.Comic
 
 			if (CurrentFile != null)
 			{
-				if (this.IndexOf(CurrentFile) != this.Count - 1)
+				if (IndexOf(CurrentFile) != Count - 1)
 				{
-					CurrentFile = this[this.IndexOf(CurrentFile) + 1];
+					CurrentFile = this[IndexOf(CurrentFile) + 1];
 					result = CurrentFile[0];
 				}
 			}
@@ -170,25 +148,21 @@ namespace CSharpComicLoader.Comic
 			return result;
 		}
 
-		/// <summary>
-		/// Get the previous page.
-		/// </summary>
-		/// <returns>The previous page as byte[]</returns>
-		public byte[] PreviousPage()
+	    /// <summary>
+	    /// Get the previous page.
+	    /// </summary>
+	    /// <param name="doublePage"> </param>
+	    /// <returns>The previous page as byte[]</returns>
+	    public byte[] PreviousPage(bool doublePage)
 		{
 			byte[] result = null;
 
 			if (CurrentFile != null && CurrentPageNumber != 0)
 			{
-				result = CurrentFile.PreviousPage();
+				result = CurrentFile.PreviousPage(doublePage);
 			}
 
-			if (result == null)
-			{
-				result = PreviousFile();
-			}
-
-			return result;
+	        return result ?? PreviousFile();
 		}
 
 		/// <summary>
@@ -201,9 +175,9 @@ namespace CSharpComicLoader.Comic
 
 			if (CurrentFile != null)
 			{
-				if (this.IndexOf(CurrentFile) != 0)
+				if (IndexOf(CurrentFile) != 0)
 				{
-					CurrentFile = this[this.IndexOf(CurrentFile) - 1];
+					CurrentFile = this[IndexOf(CurrentFile) - 1];
 					result = CurrentFile[CurrentFile.Count - 1];
 				}
 			}
@@ -217,58 +191,36 @@ namespace CSharpComicLoader.Comic
 		/// <returns>The bookmark.</returns>
 		public Bookmark GetBookmark()
 		{
-			Bookmark result;
-			List<string> fileLocations = new List<string>();
-			foreach (ComicFile comicFile in this)
-			{
-				fileLocations.Add(comicFile.Location);
-			}
+		    if (CurrentFile == null)
+                return null;
 
-			result = new Bookmark(fileLocations.ToArray(), this.IndexOf(CurrentFile), CurrentFile.CurrentPageNumber - 1);
-			return result;
+			return new Bookmark(this.Select(comicFile => comicFile.Location).ToArray(), IndexOf(CurrentFile), CurrentFile.CurrentPageNumber - 1);
 		}
 
 		/// <summary>
 		/// Get a page (image) of the ComicBook.
 		/// </summary>
-		/// <param name="pageNumber">Index number of page from the current ComicFile.</param>
+		/// <param name="pageIndex">Index number of page from the current ComicFile.</param>
 		/// <returns></returns>
-		public byte[] GetPage(int pageNumber)
+		public byte[] GetPage(int pageIndex)
 		{
-			byte[] result = null;
-
-			if (CurrentFile != null && pageNumber < CurrentFile.Count)
-			{
-				CurrentFile.CurrentPage = CurrentFile[pageNumber];
-				result = CurrentFile.CurrentPage;
-			}
-
-			return result;
+            if (CurrentFile == null || TotalFiles == 0)
+                return null;
+			return CurrentFile.SetIndex(pageIndex);
 		}
 
 		/// <summary>
 		/// Get a page (image) of the ComicBook.
 		/// </summary>
-		/// <param name="fileNumber">Index number of the ComicFile.</param>
-		/// <param name="pageNumber">Index number of page from the ComicFile.</param>
+		/// <param name="fileIndex">Index number of the ComicFile.</param>
+		/// <param name="pageIndex">Index number of page from the ComicFile.</param>
 		/// <returns>The requested image.</returns>
-		public byte[] GetPage(int fileNumber, int pageNumber)
+		public byte[] GetPage(int fileIndex, int pageIndex)
 		{
-			byte[] result = null;
-
-			if (TotalFiles > 0 && fileNumber < this.Count)
-			{
-				if (pageNumber < this[fileNumber].Count)
-				{
-
-					CurrentFile = this[fileNumber];
-					CurrentFile.CurrentPage = CurrentFile[pageNumber];
-
-					result = CurrentFile.CurrentPage;
-				}
-			}
-
-			return result;
+            if (TotalFiles == 0 || fileIndex >= Count || fileIndex < 0)
+                return null;
+            CurrentFile = this[fileIndex];
+            return CurrentFile.SetIndex(pageIndex);
 		}
 	}
 

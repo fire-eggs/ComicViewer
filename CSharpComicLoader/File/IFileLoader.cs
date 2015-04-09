@@ -16,11 +16,6 @@
 //  You should have received a copy of the GNU General Public License
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace CSharpComicLoader.File
 {
 	/// <summary>
@@ -34,21 +29,5 @@ namespace CSharpComicLoader.File
 		/// <param name="files">The files.</param>
 		/// <returns></returns>
 		LoadedFilesData LoadComicBook(string[] files);
-
-		/// <summary>
-		/// Gets or sets the total files.
-		/// </summary>
-		/// <value>
-		/// The total files.
-		/// </value>
-		int TotalFiles { get; set; }
-
-		/// <summary>
-		/// Gets or sets the loaded files.
-		/// </summary>
-		/// <value>
-		/// The loaded files.
-		/// </value>
-		int LoadedFiles { get; set; }
 	}
 }

@@ -17,14 +17,12 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Drawing;
-using System.Windows.Media;
 using System.Drawing.Drawing2D;
-
+using System.IO;
+using System.Linq;
+using System.Windows.Media;
+using Color = System.Drawing.Color;
 
 namespace CSharpComicLoader
 {
@@ -33,31 +31,34 @@ namespace CSharpComicLoader
 	/// </summary>
 	public class ImageUtils
 	{
-		private Image image;
-		private Point LocationImage = new Point(0, 0);
-		private System.Drawing.Color BackColor;
-		private MemoryStream ms;
+		private Image _image;
+
+        /// <summary>
+        /// Initializes a new instance of the ImageUtils class.
+        /// </summary>
+        public ImageUtils()
+        {
+        }
+
+        public void Dispose()
+        {
+            if (_image != null)
+                _image.Dispose();
+        }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ComicPage"/> class.
+        /// Initializes a new instance of the ImageUtils class.
 		/// </summary>
-		public ImageUtils()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ComicPage"/> class.
-		/// </summary>
-		/// <param name="Image">The image.</param>
+		/// <param name="image">The image.</param>
 		public ImageUtils(byte[] image)
 		{
 			ObjectValue = image;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ComicPage"/> class.
+        /// Initializes a new instance of the ImageUtils class.
 		/// </summary>
-		/// <param name="Image">The image.</param>
+		/// <param name="image">The image.</param>
 		public ImageUtils(Image image)
 		{
 			ObjectValue = image;
@@ -75,15 +76,14 @@ namespace CSharpComicLoader
 			{
 				if (value is Image)
 				{
-					image = value as Image;
+					_image = value as Image;
 				}
 				else if (value is byte[])
 				{
-					image = ConvertByteArrayToImage(value as byte[]);
+					_image = ConvertByteArrayToImage(value as byte[]);
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// Gets the object value as bytes.
@@ -92,14 +92,11 @@ namespace CSharpComicLoader
 		{
 			get
 			{
-				if (image != null)
+				if (_image != null)
 				{
-					return ConvertImageToByteArray(image);
+					return ConvertImageToByteArray(_image);
 				}
-				else
-				{
-					return null;
-				}
+			    return null;
 			}
 		}
 
@@ -110,14 +107,7 @@ namespace CSharpComicLoader
 		{
 			get
 			{
-				if (image != null)
-				{
-					return image;
-				}
-				else
-				{
-					return null;
-				}
+			    return _image;
 			}
 		}
 
@@ -140,27 +130,28 @@ namespace CSharpComicLoader
 		/// <summary>
 		/// Convert a byte array to an image.
 		/// </summary>
-		/// <param name="image">The image as byte array.</param>
+		/// <param name="inImage">The image as byte array.</param>
 		/// <returns></returns>
-		private Image ConvertByteArrayToImage(byte[] image)
+		private Image ConvertByteArrayToImage(byte[] inImage)
 		{
-			ms = new MemoryStream(image);
+			var ms = new MemoryStream(inImage);
 			Image returnImage = Image.FromStream(ms);
+            ms.Dispose();
 			return returnImage;
 		}
 
 		/// <summary>
 		/// Convert an image to a byte array.
 		/// </summary>
-		/// <param name="image">The image.</param>
+		/// <param name="inImage">The image.</param>
 		/// <returns></returns>
-		private byte[] ConvertImageToByteArray(System.Drawing.Image image)
+		private byte[] ConvertImageToByteArray(Image inImage)
 		{
-			MemoryStream ms = new MemoryStream();
-			image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-			byte[] ReturnValue = ms.ToArray();
-			ms.Close();
-			return ReturnValue;
+		    using (var ms = new MemoryStream())
+		    {
+                inImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+		        return ms.ToArray();
+		    }
 		}
 
 
@@ -174,61 +165,55 @@ namespace CSharpComicLoader
 		{
 			get
 			{
-				if (image != null)
-				{
-					Bitmap objBitmap = new Bitmap(image);
+			    if (_image == null) return null;
 
-					int DividedBy = 100;
-					System.Drawing.Color[] Colors = new System.Drawing.Color[DividedBy * 4];
+			    Bitmap objBitmap = new Bitmap(_image);
 
-					//get the color of a pixels at the edge of image
-					int i = 0;
+			    const int dividedBy = 100;
+			    var colors = new Color[dividedBy*4];
 
-					//left
-					for (int y = 0; y < DividedBy; y++)
-					{
-						Colors[i++] = objBitmap.GetPixel(0, y * (objBitmap.Height / DividedBy));
-					}
+			    //get the color of a pixels at the edge of image
+			    int i = 0;
 
-					//top
-					for (int x = 0; x < DividedBy; x++)
-					{
+			    //left
+			    for (int y = 0; y < dividedBy; y++)
+			    {
+			        colors[i++] = objBitmap.GetPixel(0, y*(objBitmap.Height/dividedBy));
+			    }
 
-						Colors[i++] = objBitmap.GetPixel(x * (objBitmap.Width / DividedBy), 0);
-					}
+			    //top
+			    for (int x = 0; x < dividedBy; x++)
+			    {
+			        colors[i++] = objBitmap.GetPixel(x*(objBitmap.Width/dividedBy), 0);
+			    }
 
-					//right
-					for (int y = 0; y < DividedBy; y++)
-					{
-						Colors[i++] = objBitmap.GetPixel(objBitmap.Width - 1, y * (objBitmap.Height / DividedBy));
-					}
+			    //right
+			    for (int y = 0; y < dividedBy; y++)
+			    {
+			        colors[i++] = objBitmap.GetPixel(objBitmap.Width - 1, y*(objBitmap.Height/dividedBy));
+			    }
 
-					//bottom
-					for (int x = 0; x < DividedBy; x++)
-					{
+			    //bottom
+			    for (int x = 0; x < dividedBy; x++)
+			    {
+			        colors[i++] = objBitmap.GetPixel(x*(objBitmap.Width/dividedBy), objBitmap.Height - 1);
+			    }
 
-						Colors[i++] = objBitmap.GetPixel(x * (objBitmap.Width / DividedBy), objBitmap.Height - 1);
-					}
-					//get mode of colors
-					int Color = GetModeOfColorArray(Colors);
-					//set bgcolor
+                objBitmap.Dispose();
 
-					if (Color != -1)
-					{
-						BackColor = Colors[Color];
-					}
+			    //get mode of colors
+			    int color = GetModeOfColorArray(colors);
+			    //set bgcolor
 
-					System.Windows.Media.Color BackColorWPF = new System.Windows.Media.Color();
-					BackColorWPF.A = BackColor.A;
-					BackColorWPF.B = BackColor.B;
-					BackColorWPF.G = BackColor.G;
-					BackColorWPF.R = BackColor.R;
-					return new SolidColorBrush(BackColorWPF);
-				}
-				else
-				{
-					return null;
-				}
+			    var backColor = colors[0];
+			    if (color != -1)
+			    {
+			        backColor = colors[color];
+			    }
+
+			    var backColorWpf = System.Windows.Media.Color.FromArgb(backColor.A, backColor.R, backColor.G, backColor.B);
+
+			    return new SolidColorBrush(backColorWpf);
 			}
 		}
 
@@ -237,21 +222,21 @@ namespace CSharpComicLoader
 		/// </summary>
 		/// <param name="colors">Array of Colors</param>
 		/// <returns>Index of mode, -1 if non found</returns>
-		private int GetModeOfColorArray(System.Drawing.Color[] colors)
+		private int GetModeOfColorArray(Color[] colors)
 		{
-			System.Drawing.Color[] distinctcolors = colors.Distinct().ToArray();
+			Color[] distinctcolors = colors.Distinct().ToArray();
 			int[] countcolors = new int[distinctcolors.Length];
 			int highest = 1;
 			int highestindex = -1;
-			Boolean mode = false;
+			var mode = false;
 
 			//count how many time distinct values are in colors
 			for (int i = 0; i < distinctcolors.Length; i++)
 			{
-				for (int x = 0; x < colors.Length; x++)
+				foreach (Color t in colors)
 				{
-					if (colors[x] == distinctcolors[i])
-						countcolors[i]++;
+				    if (t == distinctcolors[i])
+				        countcolors[i]++;
 				}
 			}
 			//check what the highest value is
@@ -265,96 +250,102 @@ namespace CSharpComicLoader
 				}
 			}
 
-
 			if (mode)
 				return Array.IndexOf(colors, distinctcolors[highestindex]);
-			else
-				return -1;
+			return -1;
 		}
 
-		/// <summary>
-		/// Disposes the of memory stream.
-		/// </summary>
-		public void DisposeOfMemoryStream()
+        public void ResizeImage(Size size, bool overrideHeight, bool overrideWidth, InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic)
 		{
-			if (ms != null)
-			{
-				ms.Close();
-			}
+		    if (_image == null) 
+                return;
+
+		    int sourceWidth = _image.Width;
+		    int sourceHeight = _image.Height;
+
+            int destWide = 0;
+            int destHigh = 0;
+            if (overrideHeight && overrideWidth)
+            {
+                destWide = size.Width; //ScreenWidth;
+                destHigh = size.Height; //ScreenHeight;
+            }
+            else if (overrideWidth)
+            {
+                destWide = size.Width;
+                destHigh = sourceHeight*destWide/sourceWidth;
+            }
+            else if (overrideHeight)
+            {
+                destHigh = size.Height;
+                destWide = sourceWidth * destHigh / sourceHeight;
+            }
+
+            Bitmap b = new Bitmap(destWide, destHigh);
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                g.InterpolationMode = interpolationMode;
+                g.DrawImage(_image, 0, 0, destWide, destHigh);
+            }
+
+            _image = b;
+
+            //float nPercent = 0;
+
+            ////if (!overrideHeight && overrideWidth)
+            ////{
+            ////    size.Width = ScreenWidth;
+            ////}
+
+            //float nPercentW = (size.Width / (float)sourceWidth);
+            //float nPercentH = (size.Height / (float)sourceHeight);
+
+            //if (!overrideHeight && !overrideWidth)
+            //{
+            //    if (nPercentH < nPercentW)
+            //        nPercent = nPercentH;
+            //    else
+            //        nPercent = nPercentW;
+            //}
+            //else if (overrideHeight && !overrideWidth)
+            //    nPercent = nPercentH;
+            //else if (!overrideHeight && overrideWidth)
+            //{
+            //    nPercent = nPercentW;
+            //}
+
+            //int destWidth = (int)(sourceWidth * nPercent);
+            //int destHeight = (int)(sourceHeight * nPercent);
+
+            //if (overrideHeight && overrideWidth)
+            //{
+            //    destWidth = size.Width; //ScreenWidth;
+            //    destHeight = size.Height; //ScreenHeight;
+            //}
+
+            //Bitmap b = new Bitmap(destWidth, destHeight);
+            //using (Graphics g = Graphics.FromImage(b))
+            //{
+            //    g.InterpolationMode = interpolationMode;
+            //    g.DrawImage(_image, 0, 0, destWidth, destHeight);
+            //}
+
+            //_image = b;
 		}
 
+	    public void DrawDouble(byte[] image1, byte[] image2, Size size, bool overrideHeight, bool overrideWidth)
+	    {
+            Bitmap b = new Bitmap(size.Width, size.Height);
+	        using (var g = Graphics.FromImage(b))
+	        {
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.DrawImage(ConvertByteArrayToImage(image1), 0f, 0f, size.Width / 2.0f, size.Height);
 
-		/// <summary>
-		/// Resizes the image.
-		/// </summary>
-		/// <param name="size">The size.</param>
-		/// <param name="overideHight">if set to <c>true</c> [overide hight].</param>
-		/// <param name="overideWidth">if set to <c>true</c> [overide width].</param>
-		public void ResizeImage(Size size, bool overideHight, bool overideWidth)
-		{
-			ResizeImage(size, overideHight, overideWidth, InterpolationMode.HighQualityBicubic);
-		}
-
-		/// <summary>
-		/// Resizes the image.
-		/// </summary>
-		/// <param name="size">The size.</param>
-		/// <param name="overideHight">if set to <c>true</c> [overide hight].</param>
-		/// <param name="overideWidth">if set to <c>true</c> [overide width].</param>
-		/// <param name="interpolationMode">The interpolation mode.</param>
-		public void ResizeImage(Size size, bool overideHight, bool overideWidth, InterpolationMode interpolationMode)
-		{
-			if (image != null)
-			{
-
-				int sourceWidth = image.Width;
-				int sourceHeight = image.Height;
-
-				float nPercent = 0;
-				float nPercentW = 0;
-				float nPercentH = 0;
-
-				if (!overideHight && overideWidth)
-				{
-					size.Width = ScreenWidth;
-				}
-
-				nPercentW = ((float)size.Width / (float)sourceWidth);
-				nPercentH = ((float)size.Height / (float)sourceHeight);
-
-				if (!overideHight && !overideWidth)
-				{
-					if (nPercentH < nPercentW)
-						nPercent = nPercentH;
-					else
-						nPercent = nPercentW;
-				}
-				else if (overideHight && !overideWidth)
-					nPercent = nPercentH;
-				else if (!overideHight && overideWidth)
-				{
-					nPercent = nPercentW;
-				}
-
-				int destWidth = (int)(sourceWidth * nPercent);
-				int destHeight = (int)(sourceHeight * nPercent);
-
-				if (overideHight && overideWidth)
-				{
-					destWidth = (int)(ScreenWidth);
-					destHeight = (int)(ScreenHeight);
-				}
-
-
-				Bitmap b = new Bitmap(destWidth, destHeight);
-				Graphics g = Graphics.FromImage((Image)b);
-				g.InterpolationMode = interpolationMode;
-
-				g.DrawImage(image, 0, 0, destWidth, destHeight);
-				g.Dispose();
-
-				image = (Image)b;
-			}
-		}
+                // For odd # of pages, the second image may be null
+                Image secondImage = image2 == null ? new Bitmap(1, 1) : ConvertByteArrayToImage(image2);
+                g.DrawImage(secondImage, size.Width / 2.0f, 0f, size.Width / 2.0f, size.Height);
+	        }
+	        _image = b;
+	    }
 	}
 }
