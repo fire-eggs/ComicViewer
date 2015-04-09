@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2012 Rutger Spruyt
+
+    This file is part of C# Comicviewer.
+
+    csharp comicviewer is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    csharp comicviewer is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with csharp comicviewer.  If not, see<http://www.gnu.org/licenses/> .
+-->
+<Window
+    x:Class="CSharpComicViewer.WPF.MainDisplay" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="C# comicviewer"
+    Background="WhiteSmoke"
+    Height="300"
+    Width="300"
+    Name="Display"
+    FocusVisualStyle="{x:Null}"
+    Loaded="MainDisplay_Loaded"
+    KeyDown="OnKeyDown"
+    PreviewMouseWheel="OnPreviewMouseWheel"
+    MouseWheel="OnMouseWheel"
+    Closing="ApplicationExit"
+    MouseMove="OnMouseMove"
+    PreviewKeyDown="OnPreviewKeyDown" 
+    WindowState="Maximized" 
+    WindowStyle="None" 
+    MouseRightButtonDown="OnRightButtonDown" 
+    Icon="/csharp-comicviewer;component/icon.ico" 
+    ResizeMode="NoResize">
+    <Grid>
+        <DockPanel>
+            <Menu
+            Name="MenuBar"
+            VerticalAlignment="Top" Visibility="Collapsed"
+             DockPanel.Dock="Top" >
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel
+                        HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <MenuItem
+                Header="File">
+                    <MenuItem
+                    Header="Resume last file(s)"
+                    InputGestureText="R"
+                    Name="ResumeFile_MenuBar"
+                    Click="Resume_Click" />
+                    <MenuItem
+                    Header="Load file(s)"
+                    InputGestureText="L"
+                    Name="LoadFile_MenuBar"
+                    Click="Load_Click" />
+                    <MenuItem
+                    Header="Next file"
+                    InputGestureText="Alt + Pg Dn"
+                    Name="NextFile_MenuBar"
+                    Click="NextFile_Click" />
+                    <MenuItem
+                    Header="Previous file"
+                    InputGestureText="Alt + Pg Up"
+                    Name="PreviousFile_MenuBar"
+                    Click="PreviousFile_Click" />
+                    <MenuItem
+                    Header="Exit"
+                    Name="Exit_MenuBar"
+                    InputGestureText="X"
+                    Click="Exit_Click" />
+                </MenuItem>
+                <MenuItem
+                Header="Page Control">
+                    <MenuItem
+                    Header="Next page"
+                    InputGestureText="Pg Dn"
+                    Name="NextPage_MenuBar"
+                    Click="NextPage_Click" />
+                    <MenuItem
+                    Header="Previous page"
+                    InputGestureText="Pg Up"
+                    Name="PreviousPage_MenuBar"
+                    Click="PreviousPage_Click" />
+                    <MenuItem
+                    Header="Show page information"
+                    InputGestureText="I"
+                    Name="ShowPageInformation_MenuBar"
+                    Click="ShowPageInformation_Click" />
+                </MenuItem>
+                <MenuItem
+                Header="Bookmarks"
+                Name="Bookmarks_MenuBar">
+                    <MenuItem
+                    Header="Add bookmark"
+                    Name="AddBookmark_MenuBar"
+                    Click="AddBookmark_Click" />
+                    <MenuItem
+                    Header="Manage bookmarks"
+                    Name="ManageBookmarks_MenuBar"
+                    Click="ManageBookmarks_Click" />
+                    <Separator />
+                </MenuItem>
+                <MenuItem
+                Header="About"
+                HorizontalAlignment="Right"
+                Name="About_MenuBar"
+                Click="About_Click" />
+            </Menu>
+            <ScrollViewer
+            VerticalScrollBarVisibility="Hidden"
+            HorizontalScrollBarVisibility="Hidden"
+            Name="ScrollField"
+            FocusVisualStyle="{x:Null}">
+                <Image
+                VerticalAlignment="Top"
+                Name="DisplayedImage"
+                Focusable="False"
+                FocusVisualStyle="{x:Null}" />
+            </ScrollViewer>
+        </DockPanel>
+
+        <DataGrid 
+            Height="400"
+            Width="400"
+            Name="KeyGrid" 
+            IsReadOnly="True" 
+            AutoGenerateColumns="True" />
+        
+        <TextBlock
+            Name="MessageBox"
+            Visibility="Hidden"
+            Background="Black"
+            Height="40"
+            FontSize="30"
+            Foreground="White"
+            TextAlignment="Center"
+            VerticalAlignment="Center"
+            Focusable="False" 
+            Panel.ZIndex="50" />
+        <TextBlock
+            Name="PageInfoBox"
+            Visibility="Hidden"
+            Background="LightGray"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Right"
+            MinHeight="30"
+            MinWidth="60"
+            Padding="5,2,5,2"
+            FocusVisualStyle="{x:Null}"
+            Focusable="False" 
+            Panel.ZIndex="50" />
+        <Grid.ContextMenu>
+            <ContextMenu
+                Name="MenuRightClick">
+                <MenuItem
+                    Header="Resume last file(s)"
+                    InputGestureText="R"
+                    Name="ResumeFile_RightClick"
+                    Click="Resume_Click" />
+                <MenuItem
+                    Header="Load file(s)"
+                    InputGestureText="L"
+                    Name="LoadFile_RightClick"
+                    Click="Load_Click" />
+                <MenuItem
+                    Header="Next page"
+                    InputGestureText="Pg Dn"
+                    Name="NextPage_RightClick"
+                    Click="NextPage_Click" />
+                <MenuItem
+                    Header="Previous page"
+                    InputGestureText="Pg Up"
+                    Name="PreviousPage_RightClick"
+                    Click="PreviousPage_Click" />
+                <MenuItem
+                    Header="Next file"
+                    InputGestureText="Alt + Pg Dn"
+                    Name="NextFile_RightClick"
+                    Click="NextFile_Click" />
+                <MenuItem
+                    Header="Previous file"
+                    InputGestureText="Alt + Pg Up"
+                    Name="PreviousFile_RightClick"
+                    Click="PreviousFile_Click" />
+                <MenuItem
+                    Header="Bookmarks"
+                    Name="Bookmarks_MenuRightClick">
+                    <MenuItem
+                        Header="Add bookmark"
+                        Name="AddBookmark_MenuRightClick"
+                        Click="AddBookmark_Click" />
+                    <MenuItem
+                        Header="Manage bookmarks"
+                        Name="ManageBookmarks_MenuRightClick"
+                        Click="ManageBookmarks_Click" />
+                    <Separator />
+                </MenuItem>
+                <MenuItem
+                Header="About"
+                Name="About_RightClick"
+                Click="About_Click" />
+                <MenuItem
+                    Header="Exit"
+                    Name="Exit_RightClick"
+                    InputGestureText="X"
+                    Click="Exit_Click" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+    </Grid>
+</Window>

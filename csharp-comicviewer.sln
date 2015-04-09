@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpComicViewer", "CSharpComicViewer\CSharpComicViewer.csproj", "{DBAF8DE0-D6C8-43AA-A3FE-2F5375B7D9C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpComicLoader", "CSharpComicLoader\CSharpComicLoader.csproj", "{88BF022A-0495-425F-9F36-BCA8839E853D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{0A23C521-7883-4A80-93D1-530CB888B32E}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\SevenZipSharp.dll = Resources\SevenZipSharp.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7-zip x64", "7-zip x64", "{F04A882C-1983-411B-BD23-6BE5E143716E}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\7-zip x64\7z.dll = Resources\7-zip x64\7z.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7-zip x86", "7-zip x86", "{D94E7892-366B-413E-9809-E5434754B1F8}"
+	ProjectSection(SolutionItems) = preProject
+		Resources\7-zip x86\7z.dll = Resources\7-zip x86\7z.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{205DF6E7-E7D0-48B3-9020-7DCB7D547F40}"
+	ProjectSection(SolutionItems) = preProject
+		Setup\Licence.txt = Setup\Licence.txt
+		Setup\SetupCompile.iss = Setup\SetupCompile.iss
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBAF8DE0-D6C8-43AA-A3FE-2F5375B7D9C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAF8DE0-D6C8-43AA-A3FE-2F5375B7D9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBAF8DE0-D6C8-43AA-A3FE-2F5375B7D9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAF8DE0-D6C8-43AA-A3FE-2F5375B7D9C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88BF022A-0495-425F-9F36-BCA8839E853D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88BF022A-0495-425F-9F36-BCA8839E853D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88BF022A-0495-425F-9F36-BCA8839E853D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88BF022A-0495-425F-9F36-BCA8839E853D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F04A882C-1983-411B-BD23-6BE5E143716E} = {0A23C521-7883-4A80-93D1-530CB888B32E}
+		{D94E7892-366B-413E-9809-E5434754B1F8} = {0A23C521-7883-4A80-93D1-530CB888B32E}
+	EndGlobalSection
+EndGlobal
