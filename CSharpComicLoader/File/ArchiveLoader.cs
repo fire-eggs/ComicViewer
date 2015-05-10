@@ -80,7 +80,7 @@ namespace CSharpComicLoader.File
                 // KBR 20150209 'CH' and 'Ch'
                 // KBR 20140907 might not be numeric!
                 if (ma.Count != mb.Count)
-                    string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
+                    return string.Compare(a, b, StringComparison.OrdinalIgnoreCase);
 
                 for (int i = 0; i < ma.Count; ++i)
                 {
