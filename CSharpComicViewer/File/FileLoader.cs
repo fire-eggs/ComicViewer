@@ -17,6 +17,7 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 
+using System.IO;
 using CSharpComicLoader;
 using CSharpComicLoader.File;
 
@@ -84,7 +85,11 @@ namespace CSharpComicViewer.File
             else if (PageType == PageType.Image)
             {
                 var imageLoader = new ImageLoader();
-                LoadedFileData = imageLoader.LoadComicBook(files);
+                // Q&D: if the user selects only one image, load all images in the folder
+                if (files.Length == 1)
+                    LoadedFileData = imageLoader.LoadComicBook(Path.GetDirectoryName(files[0]));
+                else
+                    LoadedFileData = imageLoader.LoadComicBook(files);
             }
 
             Error = LoadedFileData.Error;

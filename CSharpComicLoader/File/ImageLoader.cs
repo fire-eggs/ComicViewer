@@ -17,11 +17,11 @@
 //  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
 //-------------------------------------------------------------------------------------
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CSharpComicLoader.Comic;
+
+// KBR TODO async loader
+// KBR TODO verify there are no file locks
 
 namespace CSharpComicLoader.File
 {
@@ -51,7 +51,7 @@ namespace CSharpComicLoader.File
                         continue; // KBR just skip the file
                     }
 
-                    // KBR TODO wasn't this check already made?
+                    // KBR TODO wasn't this check already made? [not from the Q&D multi-file loader...]
 				    if (!Utils.ValidateImageFileExtension(file))
                         continue; // KBR not a supported image extension, skip it
 
@@ -83,5 +83,13 @@ namespace CSharpComicLoader.File
 				return returnValue;
 			}
 		}
+
+        // A quick-and-dirty "load all image files in a folder"
+	    public LoadedFilesData LoadComicBook(string path)
+	    {
+	        string [] allFiles = Directory.GetFiles(path);
+	        return LoadComicBook(allFiles);
+	    }
+
 	}
 }
