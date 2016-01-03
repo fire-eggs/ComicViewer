@@ -22,4 +22,4 @@ Features Specific to this Fork (in no particular order)
 - Handle various file load errors
 - Plugged memory/resource leaks
 - Asynchronous archive loading (don't have to wait for the entire zip file to load)
-
+- 01/03/2016: if you open a *single* image in a folder, the program will now open *all* images in the folder.
