@@ -23,17 +23,22 @@
             Height="340"
    Width="450" 
         Title="About" 
-        Icon="/csharp-comicviewer;component/icon.ico" ResizeMode="NoResize" AllowsTransparency="False" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" Name="AboutWindow" Topmost="False">
+        Icon="/csharp-comicviewer;component/icon.ico" ResizeMode="NoResize" AllowsTransparency="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" Name="AboutWindow" Topmost="False">
 
-    <Grid DataContext="{Binding ElementName=AboutWindow, Path=.}" Focusable="True" IsManipulationEnabled="True" ShowGridLines="False">
-        <Image Height="48" Name="Logo" Stretch="None" Width="48"  Source="/csharp-comicviewer;component/About.png" HorizontalAlignment="Left" VerticalAlignment="Top" />
-        <TextBlock Text="{Binding Path=ProgramName}" Height="48" Margin="54,0,14,0" VerticalAlignment="Top" FontSize="28" />
-        <TextBlock Text="{Binding Path=Copyright}" Height="28" HorizontalAlignment="Left" Margin="54,48,0,0"  VerticalAlignment="Top"  Width="360" />
-        <TextBlock Text="{Binding Path=Version}" Height="28" HorizontalAlignment="Left" Margin="54,76,0,0" VerticalAlignment="Top" Width="360" />
-        <TextBlock Height="28" HorizontalAlignment="Left" Margin="54,104,0,0" VerticalAlignment="Top" Width="360">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <Image Height="48" Name="Logo" Stretch="None" Width="48"  Source="/csharp-comicviewer;component/About.png"/>
+            <TextBlock Text="{Binding Path=ProgramName}" Height="48" FontSize="28" Margin="10,0,0,0" />
+        </StackPanel>
+        <TextBlock Text="{Binding Path=Copyright}" Height="28" />
+        <TextBlock Text="{Binding Path=Version}" Height="28" />
+        <TextBlock>
+            Github: <Hyperlink Click="Hyperlink_Click" NavigateUri="https://github.com/fire-eggs/ComicViewer">https://github.com/fire-eggs/ComicViewer</Hyperlink>
+        </TextBlock>
+        <TextBlock Height="28">
                 Website: <Hyperlink Click="Hyperlink_Click" NavigateUri="http://csharpcomicview.sourceforge.net/">http://csharpcomicview.sourceforge.net/</Hyperlink>
         </TextBlock>
-        <TextBox  Name="Description_TextBox" Height="100" Margin="54,134,14,68" IsReadOnly="True" IsEnabled="True" TextWrapping="WrapWithOverflow" Padding="0" />
-        <Button Content="Close" Height="23" HorizontalAlignment="Left" Margin="341,266,0,0" Name="Close_btn" VerticalAlignment="Top" Width="75" Click="Close_Click" />
-    </Grid>
+        <TextBox  Name="Description_TextBox" Height="100" IsReadOnly="True" IsEnabled="True" TextWrapping="WrapWithOverflow" Padding="0" />
+        <Button Content="Close" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Click="Close_Click" Margin="0,5,0,0" />
+    </StackPanel>
 </Window>

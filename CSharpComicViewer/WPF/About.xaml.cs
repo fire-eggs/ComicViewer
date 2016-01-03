@@ -36,6 +36,7 @@ namespace CSharpComicViewer.WPF
 		public About()
 		{
 			InitializeComponent();
+		    DataContext = this;
 			SetDescription();
 		}
 
