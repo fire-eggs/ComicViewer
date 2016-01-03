@@ -72,8 +72,9 @@ namespace CSharpComicLoader.File
 
                 ArchiveLoader.NumericalSort(_fileNames);
 
+                // The file count may be out-of-sync between the extractor and _filenames, due to skipped folders above
                 // Load the first 5 files (if possible) before returning to GUI
-                initialFilesToRead = (int)Math.Min(5, extractor.FilesCount);
+                initialFilesToRead = Math.Min(5, _fileNames.Count()); // extractor.FilesCount);
                 for (int j = 0; j < initialFilesToRead; j++)
                 {
                     ExtractFile(extractor, j, comicFile);
