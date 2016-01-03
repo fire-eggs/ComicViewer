@@ -1041,7 +1041,9 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            new About().ShowDialog();
+            var ab = new About();
+            ab.Owner = this;
+            ab.ShowDialog();
         }
         #endregion
 
@@ -1596,7 +1598,7 @@ namespace CSharpComicViewer.WPF
         private void GenerateKeyHints()
         {
             _keyHints = new List<KeyHint>();
-            var keys = new[] { "R", "L", "T", "D", "I", "N", "W", "M", "X", "G", " ",
+            var keys = new[] { "R", "L", "T", "D", "G", "I", "N", "W", "M", "X", " ",
                                "Arrow keys", "Page Down", "Page Up", "Alt + Page Down", "Alt + Page Up",
                                "Alt + Home", "Home", "Alt + End", "End"
                              };
@@ -1605,12 +1607,12 @@ namespace CSharpComicViewer.WPF
                                 "Load file(s)",
                                 "Toggle image display mode (fit vs stretch)",
                                 "Show double pages (ignores display mode)",
-                                "Show page count",
+                                "Goto Page",
+                                "Show page count, file information",
                                 "Show .txt in current file if available",
                                 "Toggle between windowed and fullscreen mode",
                                 "Minimize",
                                 "Exit",
-                                "Goto Page",
                                 " ",
                                 "Move over page",
                                 "Next page",
@@ -1662,6 +1664,11 @@ namespace CSharpComicViewer.WPF
         private void Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+        }
+
+        private void DoShowText(object sender, RoutedEventArgs e)
+        {
+            ShowText();
         }
     }
 }
