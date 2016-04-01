@@ -5,7 +5,7 @@ A fork of Rutger Spruyt's "C# ComicViewer". See http://sourceforge.net/projects/
 
 _Description_
 
-A manga/comicbook reader in C#, .NET 4.0 and WPF.  Zip files supported via 7-zip and SevenZipSharp.
+A manga/comicbook reader in C#, .NET 4.0 and WPF.  Zip/rar/cbr/cbz files supported via 7-zip and SevenZipSharp.
 
 _Features_
 
@@ -23,3 +23,4 @@ Features Specific to this Fork (in no particular order)
 - Plugged memory/resource leaks
 - Asynchronous archive loading (don't have to wait for the entire zip file to load)
 - 01/03/2016: if you open a *single* image in a folder, the program will now open *all* images in the folder.
+- 04/02/2016: attempt to handle archives-containing-archives. Not asynchronous.
