@@ -6,6 +6,9 @@ using System.Threading;
 using CSharpComicLoader.Comic;
 using SevenZip;
 
+// ReSharper disable SuggestUseVarKeywordEvident
+// ReSharper disable LoopCanBeConvertedToQuery
+
 /*
 Asynchronous archive loader.
 
@@ -42,6 +45,7 @@ namespace CSharpComicLoader.File
 
         private Thread _t1;
         private string[] _fileNames;
+        private string[] _fileNames2;
 
         public LoadedFilesData LoadComicBook(string[] files)
         {
@@ -77,7 +81,7 @@ namespace CSharpComicLoader.File
                 initialFilesToRead = Math.Min(5, _fileNames.Count()); // extractor.FilesCount);
                 for (int j = 0; j < initialFilesToRead; j++)
                 {
-                    ExtractFile(extractor, j, comicFile);
+                    ExtractFile(extractor, j, comicFile, _fileNames);
                 }
             }
 
@@ -88,7 +92,7 @@ namespace CSharpComicLoader.File
                 {
                     for (int i = initialFilesToRead; i < _fileNames.Length; i++)
                     {
-                        ExtractFile(extractor2, i, comicFile);
+                        ExtractFile(extractor2, i, comicFile, _fileNames);
                     }
                 }
             });
@@ -97,16 +101,44 @@ namespace CSharpComicLoader.File
             return returnValue;
         }
 
-        private void ExtractFile(SevenZipExtractor extractor, int i, ComicFile comicFile)
+        private void ExtractFile(SevenZipExtractor extractor, int i, ComicFile comicFile, string [] activeFileNames)
         {
+            // KBR 04/01/2016 Attempt to deal with archives-of-archives. Alas, this could go into infinite recursive mode
+            if (Utils.ValidateArchiveFileExtension(activeFileNames[i]))
+            {
+                string tempPath = Path.GetTempFileName();
+                using (FileStream fs = new FileStream(tempPath, FileMode.Create))
+                {
+                    extractor.ExtractFile(activeFileNames[i], fs);
+                }
+                using (SevenZipExtractor extractor3 = new SevenZipExtractor(tempPath))
+                {
+                    List<string> tempFileNames = new List<string>();
+                    foreach (var archiveFileInfo in extractor3.ArchiveFileData)
+                    {
+                        if (!archiveFileInfo.IsDirectory)
+                            tempFileNames.Add(archiveFileInfo.FileName);
+                    }
+                    _fileNames2 = tempFileNames.ToArray();
+                    if (_fileNames2.Length < 1) // Nothing to show!
+                        return;
+
+                    ArchiveLoader.NumericalSort(_fileNames2);
+                    for (int j = 0; j < _fileNames2.Length; j++)
+                    {
+                        ExtractFile(extractor3, j, comicFile, _fileNames2);
+                    }
+                }
+            }
+
             //if it is an image add it to array list
-            if (Utils.ValidateImageFileExtension(_fileNames[i]))
+            if (Utils.ValidateImageFileExtension(activeFileNames[i]))
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
                     try
                     {
-                        extractor.ExtractFile(_fileNames[i], ms);
+                        extractor.ExtractFile(activeFileNames[i], ms);
                         ms.Position = 0;
                         comicFile.Add(ms.ToArray());
                     }
@@ -118,11 +150,11 @@ namespace CSharpComicLoader.File
             }
 
             //if it is a txt file set it as InfoTxt
-            if (Utils.ValidateTextFileExtension(_fileNames[i]))
+            if (Utils.ValidateTextFileExtension(activeFileNames[i]))
             {
                 using (var ms = new MemoryStream())
                 {
-                    extractor.ExtractFile(_fileNames[i], ms);
+                    extractor.ExtractFile(activeFileNames[i], ms);
                     ms.Position = 0;
                     using (var sr = new StreamReader(ms))
                     {

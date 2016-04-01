@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("C# Comicviewer")]
-[assembly: AssemblyDescription("KBR 01/03/2016 - C# Comicviewer is a comic viewer written in C#.\r\nIt uses:\r\n\t\u2022.Net 4.0 (http://www.microsoft.com/net) \r\n\t\u20227-zip (http://7-zip.org/) \r\n\t\u2022SevenZipSharp (http://sevenzipsharp.codeplex.com/)")]
+[assembly: AssemblyDescription("KBR 04/02/2016 - C# Comicviewer is a comic viewer written in C#.\r\nIt uses:\r\n\t\u2022.Net 4.0 (http://www.microsoft.com/net) \r\n\t\u20227-zip (http://7-zip.org/) \r\n\t\u2022SevenZipSharp (http://sevenzipsharp.codeplex.com/)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("C# Comicviewer")]
@@ -50,5 +50,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.5.5.*")]
-[assembly: AssemblyFileVersion("1.5.5")]
+[assembly: AssemblyVersion("1.5.6.*")]
+[assembly: AssemblyFileVersion("1.5.6")]
