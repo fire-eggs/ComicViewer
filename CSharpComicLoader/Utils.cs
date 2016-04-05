@@ -29,7 +29,9 @@ namespace CSharpComicLoader
 	/// </summary>
 	public static class Utils
 	{
-		/// <summary>
+        private static readonly string[] supportedArchives = { "zip", "rar", "cbz", "cbr", "7z" };
+
+	    /// <summary>
 		/// Validates the archive file extension.
 		/// </summary>
 		/// <param name="FilePath">The file path.</param>
@@ -38,9 +40,7 @@ namespace CSharpComicLoader
 		{
 			bool returnValue = false;
 
-			string[] supportedExtensions = Enum.GetNames(typeof(SupportedArchives));
-
-			foreach (string extension in supportedExtensions)
+            foreach (string extension in supportedArchives)
 			{
 				if (FilePath.EndsWith("." + extension, StringComparison.OrdinalIgnoreCase))
 				{
@@ -107,7 +107,6 @@ namespace CSharpComicLoader
 			{
 				string returnValue = "";
 
-				string[] supportedArchives = Enum.GetNames(typeof(SupportedArchives));
 				string[] supportedImages = Enum.GetNames(typeof(SupportedImages));
 
 				//Add Archives to filter

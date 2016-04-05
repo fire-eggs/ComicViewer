@@ -32,18 +32,6 @@ namespace CSharpComicLoader.File
 	}
 
 	/// <summary>
-	/// Contains supported archive extensions.
-	/// </summary>
-	public enum SupportedArchives
-	{
-		zip,
-		rar,
-		cbr,
-		cbz
-        // ,7z KBR TODO not syntactically correct
-	}
-
-	/// <summary>
 	/// Contains supported information text extensions.
 	/// </summary>
 	public enum SupportedTextFiles
