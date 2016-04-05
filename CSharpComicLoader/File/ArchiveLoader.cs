@@ -88,10 +88,17 @@ namespace CSharpComicLoader.File
                     if (ret != 0)
                         return ret;
 
-                    // KBR 20141222 integer overflow
-                    ret = (int)(long.Parse(ma[i].Groups[2].Value) - long.Parse(mb[i].Groups[2].Value));
-                    if (ret != 0)
-                        return ret;
+                    try
+                    {
+                        // KBR 20141222 integer overflow
+                        ret = (int)(long.Parse(ma[i].Groups[2].Value) - long.Parse(mb[i].Groups[2].Value));
+                        if (ret != 0)
+                            return ret;
+                    }
+                    catch (Exception) // 20160405 more overflow
+                    {
+                        return 0;
+                    }
                 }
 
                 return 0;
