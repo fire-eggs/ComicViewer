@@ -79,7 +79,8 @@ namespace CSharpComicViewer.File
             {
                 //var archiveLoader = new ArchiveLoader();
                 //LoadedFileData = archiveLoader.LoadComicBook(files);
-                _asyncLoader = new ArchiveLoadAsync();
+                if (_asyncLoader == null)
+                    _asyncLoader = new ArchiveLoadAsync();
                 LoadedFileData = _asyncLoader.LoadComicBook(files);
             }
             else if (PageType == PageType.Image)

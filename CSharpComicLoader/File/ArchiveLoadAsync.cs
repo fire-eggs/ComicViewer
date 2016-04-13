@@ -1,4 +1,22 @@
-﻿using System;
+﻿//-------------------------------------------------------------------------------------
+//  Copyright (c) 2013-2016 by Kevin Routley
+//
+//  This file is part of C# Comicviewer.
+//
+//  csharp comicviewer is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  csharp comicviewer is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
+//-------------------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,6 +61,20 @@ namespace CSharpComicLoader.File
             }
         }
 
+        public void Dispose()
+        {
+            NukeThread();
+        }
+
+        private void NukeThread()
+        {
+            if (_t1 != null)
+            {
+                _t1.Abort();
+                _t1 = null;
+            }
+        }
+
         private Thread _t1;
         private string[] _fileNames;
         private string[] _fileNames2;
@@ -56,6 +88,8 @@ namespace CSharpComicLoader.File
                 returnValue.Error = "One or more archives were not found";
                 return returnValue;
             }
+
+            NukeThread();
 
             var comicFile = new ComicFile {Location = files[0]};
             returnValue.ComicBook.Add(comicFile);
