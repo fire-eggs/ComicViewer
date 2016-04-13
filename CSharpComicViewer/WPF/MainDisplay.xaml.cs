@@ -579,8 +579,8 @@ namespace CSharpComicViewer.WPF
             int pageChoice = pageSel.Page - 1;
             if (pageChoice > -1)
             {
-                byte[] image = _comicBook.GetPage(pageChoice); // TODO return only a valid page
-                if (image != null && image.Length > 1 && image[0] != 0)   // TODO duplicated code - see Next and Previous Page
+                byte[] image = _comicBook.GetPage(pageChoice);
+                if (image != null)
                 {
                     DisplayImage(image, ImageStartPosition.Top);
                 }

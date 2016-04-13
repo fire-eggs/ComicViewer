@@ -88,8 +88,9 @@ namespace CSharpComicLoader.Comic
         /// Gets the next page.
         /// </summary>
         /// <returns>The next page as byte[]</returns>
-        public byte[] NextPage()
+        public byte[] NextPage() // TODO consolidate w/ prev and set below
         {
+            int oldIndex = _currentIndex;
             if (_currentIndex + 1 >= Count)
                 return null;
             _currentIndex++;
@@ -102,6 +103,7 @@ namespace CSharpComicLoader.Comic
                     return tempPage;
                 _currentIndex++;
             }
+            _currentIndex = oldIndex; // don't leave the index pointing at an invalid page
             return null;
         }
 
@@ -110,8 +112,9 @@ namespace CSharpComicLoader.Comic
         /// </summary>
         /// <param name="doublePage"> </param>
         /// <returns>The previous page as byte[]</returns>
-        public byte[] PreviousPage(bool doublePage)
+        public byte[] PreviousPage(bool doublePage) // TODO consolidate w/ next above and set below
         {
+            int oldIndex = _currentIndex;
             if (CurrentPage == null)
                 return null;
 
@@ -135,15 +138,27 @@ namespace CSharpComicLoader.Comic
                     return tempPage;
                 _currentIndex--;
             }
+            _currentIndex = oldIndex; // don't leave the index pointing at an invalid page
             return null;
         }
 
-        public byte[] SetIndex(int pageIndex)
+        public byte[] SetIndex(int pageIndex) // TODO consolidate w/ next & prev above
         {
             if (pageIndex < 0 || pageIndex >= Count)
                 return null;
+            int oldIndex = _currentIndex;
             _currentIndex = pageIndex;
-            return this[_currentIndex];
+            while (_currentIndex < Count) // TODO might be off-by-one?
+            {
+                byte[] tempPage = this[_currentIndex];
+
+                // Gon Vol 3 failed decompression of a page with zero bytes
+                if (tempPage != null && tempPage.Length > 1 && tempPage[0] != 0 && tempPage[1] != 0)
+                    return tempPage;
+                _currentIndex++;
+            }
+            _currentIndex = oldIndex;
+            return null;
         }
     }
 }
