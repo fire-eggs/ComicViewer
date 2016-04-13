@@ -1,4 +1,23 @@
-﻿using System;
+﻿//-------------------------------------------------------------------------------------
+//  Copyright (c) 2013-2016 by Kevin Routley
+//
+//  This file is part of C# Comicviewer.
+//
+//  csharp comicviewer is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  csharp comicviewer is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with csharp comicviewer.  If not, see <http://www.gnu.org/licenses/>.
+//-------------------------------------------------------------------------------------
+
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
@@ -10,14 +29,8 @@ namespace CSharpComicViewer.WPF
     /// </summary>
     public partial class GotoPageDlg
     {
-        // TODO error checking
-
         private readonly int _maxPage;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="maxPage"></param>
         public GotoPageDlg(int maxPage)
         {
             _maxPage = maxPage;
@@ -28,14 +41,8 @@ namespace CSharpComicViewer.WPF
             lblMaxPage.Content = " of " + _maxPage;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public int Page { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public string PageText
         {
             get
@@ -44,14 +51,11 @@ namespace CSharpComicViewer.WPF
             }
             set
             {
-Console.WriteLine("SetPage '{0}'", value);
                 int newpage;
                 if (!int.TryParse(value, out newpage))
                     return;
-                if (newpage < 1 || newpage > _maxPage)
-                    Page = 1;
-                else
-                    Page = newpage;
+                Page = Math.Min(_maxPage, newpage); // disallow > max
+                Page = Math.Max(1, Page);        // disallow < 1
             }
         }
 
@@ -64,15 +68,21 @@ Console.WriteLine("SetPage '{0}'", value);
         // Prevent space, non-numeric keys. Allow right/left arrow, tab, return, backspace.
         private void TxtPage_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-Console.Write(e.Key);
-            // Note: allow Escape to close dialog
-            if (e.Key != Key.Back && e.Key != Key.Right && e.Key != Key.Left && e.Key != Key.Tab && e.Key != Key.Return && e.Key != Key.Delete && e.Key != Key.Escape)
+            switch (e.Key)
             {
-                int val = (int)e.Key;
-Console.Write(" val:" + val);
-                e.Handled = val > 43 || val < 34;  // 43 == '9', 34 == '0'
+                case Key.Back:
+                case Key.Right:
+                case Key.Left:
+                case Key.Tab:
+                case Key.Return:
+                case Key.Delete:
+                case Key.Escape: // allow to close dialog
+                    break;
+                default:
+                    int val = (int)e.Key;
+                    e.Handled = val > 43 || val < 34;  // 43 == '9', 34 == '0'
+                    break;
             }
-Console.WriteLine();
         }
     }
 }
