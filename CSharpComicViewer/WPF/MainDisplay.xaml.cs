@@ -294,7 +294,7 @@ namespace CSharpComicViewer.WPF
                 _comicBook = new ComicBook(); // KBR use an empty placeholder book
             }
 
-            KeyGrid.ItemsSource = KeyHints; // TODO consider using an InformationWindow and show on the '?' key
+            KeyGrid.ItemsSource = KeyHints; // TODO consider using an InformationText and show on the '?' key. Problem: keys are not in a string!
         }
 
         /// <summary>
@@ -540,10 +540,8 @@ namespace CSharpComicViewer.WPF
             if (_comicBook.TotalFiles == 0)
             {
                 ShowMessage("No archive loaded");
-                return;
             }
-
-            if (string.IsNullOrEmpty(_comicBook.CurrentFile.InfoText))
+            else if (string.IsNullOrEmpty(_comicBook.CurrentFile.InfoText))
             {
                 ShowMessage("No information text");
             }
@@ -566,9 +564,7 @@ namespace CSharpComicViewer.WPF
         {
             // Allow the user to enter a page # and view that page.
             int maxpage = _comicBook.TotalPages;
-            var pageSel = new GotoPageDlg(maxpage);
-            pageSel.Page = _comicBook.CurrentPageNumber;
-            pageSel.Owner = this;
+            var pageSel = new GotoPageDlg(maxpage) {Page = _comicBook.CurrentPageNumber, Owner = this};
 
             Mouse.OverrideCursor = Cursors.Arrow;
             bool? result = pageSel.ShowDialog();
@@ -594,102 +590,54 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs"/> instance containing the event data.</param>
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Home && !Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+            byte[] image;
+            bool altKey = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
+            var key = e.Key == Key.System ? e.SystemKey : e.Key;
+            switch (key)
             {
-                // first page of all
-                if (_comicBook.TotalFiles != 0)
-                {
-                    byte[] image = _comicBook.GetPage(0, 0);
+                case Key.Home:
+                    if (_comicBook.TotalFiles == 0)
+                        break;
+                    image = altKey ? _comicBook.GetPage(0, 0) : _comicBook.GetPage(0); // TODO now out-of-sync with help menu?
                     if (image != null)
                     {
                         DisplayImage(image, ImageStartPosition.Top);
                     }
-                }
-            }
-
-            if (e.SystemKey == Key.Home && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                // first page of current archive
-                if (_comicBook.TotalFiles != 0)
-                {
-                    byte[] image = _comicBook.GetPage(0);
+                    break;
+                case Key.End:
+                    if (_comicBook.TotalFiles == 0)
+                        break;
+                    // TODO replace two GetPage variants with one that takes a default parameter?
+                    image = altKey ? _comicBook.GetPage(_comicBook.TotalFiles - 1, _comicBook[_comicBook.TotalFiles - 1].TotalPages - 1) : _comicBook.GetPage(_comicBook.CurrentFile.TotalPages - 1);
                     if (image != null)
                     {
                         DisplayImage(image, ImageStartPosition.Top);
                     }
-                }
-            }
-
-            if (e.Key == Key.End && !Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                // last page of all
-                if (_comicBook.TotalFiles != 0)
-                {
-                    byte[] image = _comicBook.GetPage(_comicBook.TotalFiles - 1, _comicBook[_comicBook.TotalFiles - 1].TotalPages - 1);
-                    if (image != null)
+                    break;
+                case Key.PageDown:
+                    if (altKey)
+                        NextFile();
+                    else
                     {
-                        DisplayImage(image, ImageStartPosition.Top);
+                        NextPage();
+                        e.Handled = true; // TODO why is this one necessary?
                     }
-                }
-            }
-
-            if (e.SystemKey == Key.End && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                // last page of current archive
-                if (_comicBook.TotalFiles != 0)
-                {
-                    byte[] image = _comicBook.GetPage(_comicBook.CurrentFile.TotalPages - 1);
-                    if (image != null)
+                    break;
+                case Key.PageUp:
+                    if (altKey)
+                        PreviousFile();
+                    else
                     {
-                        DisplayImage(image, ImageStartPosition.Top);
+                        PreviousPage(Configuration.DoublePage); // TODO can PreviousPage just look at the Configuration value??
+                        e.Handled = true; // TODO why is this one necessary?
                     }
-                }
-            }
-
-            if (e.Key == Key.PageDown)
-            {
-                NextPage();
-
-                //prevent default action from occurring.
-                e.Handled = true;
-            }
-
-            if (e.Key == Key.PageUp)
-            {
-                PreviousPage(Configuration.DoublePage);
-
-                //prevent default action from occurring.
-                e.Handled = true;
-            }
-
-            if (e.SystemKey == Key.PageDown && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                NextFile();
-            }
-
-            if (e.SystemKey == Key.PageUp && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                PreviousFile();
-            }
-
-            if (e.Key == Key.Down)
-            {
-                OnArrowKey(Key.Down);
-            }
-
-            if (e.Key == Key.Up)
-            {
-                OnArrowKey(Key.Up);
-            }
-
-            if (e.Key == Key.Right)
-            {
-                OnArrowKey(Key.Right);
-            }
-
-            if (e.Key == Key.Left)
-            {
-                OnArrowKey(Key.Left);
+                    break;
+                case Key.Down:
+                case Key.Up:
+                case Key.Left:
+                case Key.Right:
+                    OnArrowKey(key);
+                    break;
             }
         }
 
@@ -778,19 +726,19 @@ namespace CSharpComicViewer.WPF
                 if (DisplayedImage.Width > ScrollField.ViewportWidth)
                 {
                     //image widther then screen
-                    if (ScrollField.HorizontalOffset == 0)
+                    if (ScrollField.HorizontalOffset < 1)
                     {
                         //Can count down for previous page
                         _previousPageBoolean = true;
                         _previousPageCount--;
                     }
-                    else if (ScrollField.VerticalOffset == 0)
+                    else if (ScrollField.VerticalOffset < 1)
                     {
                         //scroll horizontal
                         ScrollField.ScrollToHorizontalOffset(ScrollField.HorizontalOffset - _scrollValueHorizontal);
                     }
                 }
-                else if (ScrollField.VerticalOffset == 0)
+                else if (ScrollField.VerticalOffset < 1)
                 {
                     //Can count down for previous page
                     _previousPageBoolean = true;
@@ -1041,8 +989,7 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            var ab = new About();
-            ab.Owner = this;
+            var ab = new About {Owner = this};
             ab.ShowDialog();
         }
         #endregion
