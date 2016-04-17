@@ -1325,7 +1325,13 @@ namespace CSharpComicViewer.WPF
                     return;
                 }
 
-                DisplayImage(_comicBook.GetPage(fileNumber, pageNumber), ImageStartPosition.Top);
+                var page = _comicBook.GetPage(fileNumber, pageNumber);
+                if (page == null)
+                {
+                    ShowMessage("Unable to load first few images");
+                    return; // TODO need to be able to continue / recover
+                }
+                DisplayImage(page, ImageStartPosition.Top);
 
                 foreach (ComicFile comicFile in _comicBook)
                 {

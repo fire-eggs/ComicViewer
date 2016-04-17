@@ -31,6 +31,10 @@ namespace CSharpComicViewer.WPF
     {
         private readonly int _maxPage;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="maxPage"></param>
         public GotoPageDlg(int maxPage)
         {
             _maxPage = maxPage;
@@ -41,8 +45,14 @@ namespace CSharpComicViewer.WPF
             lblMaxPage.Content = " of " + _maxPage;
         }
 
+        /// <summary>
+        /// Requested page number.
+        /// </summary>
         public int Page { get; set; }
 
+        /// <summary>
+        /// Binding for the textbox in xaml. Enforces range.
+        /// </summary>
         public string PageText
         {
             get
