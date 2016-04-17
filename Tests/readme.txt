@@ -13,3 +13,6 @@ multi_zero_start.zip : an archive with multiple empty files at the start. Prev P
 should correctly refuse to go past the first valid file. 'Goto Page' should correctly
 show only the first valid file. Loading the archive should show the first valid file.
 
+60821-Bye_Bye_Love_Letter_SL.zip : this file is the first instance I encountered where
+a FOLDER had an image extension. I.e. the folder inside the archive has a .PNG 
+extension. The code was changed to not treat folders as images.

@@ -95,28 +95,40 @@ namespace CSharpComicLoader.File
             returnValue.ComicBook.Add(comicFile);
 
             int initialFilesToRead;
-            using (SevenZipExtractor extractor = new SevenZipExtractor(files[0]))
+            try
             {
-                // "bye bye love letter" comic has a folder whose name ends in .PNG, and the extractor thinks it is an image
-                List<string> tempFileNames = new List<string>();
-                foreach (var archiveFileInfo in extractor.ArchiveFileData)
+                using (SevenZipExtractor extractor = new SevenZipExtractor(files[0]))
                 {
-                    if (!archiveFileInfo.IsDirectory)
-                        tempFileNames.Add(archiveFileInfo.FileName);
-                }
-                _fileNames = tempFileNames.ToArray();
-                if (_fileNames.Length < 1) // Nothing to show!
-                    return returnValue;
+                    // "bye bye love letter" comic has a folder whose name ends in .PNG, and the extractor thinks it is an image
+                    List<string> tempFileNames = new List<string>();
+                    foreach (var archiveFileInfo in extractor.ArchiveFileData)
+                    {
+                        if (!archiveFileInfo.IsDirectory)
+                            tempFileNames.Add(archiveFileInfo.FileName);
+                    }
+                    _fileNames = tempFileNames.ToArray();
+                    if (_fileNames.Length < 1) // Nothing to show!
+                    {
+                        returnValue.Error = "Archive has no files.";
+                        return returnValue;
+                    }
 
-                ArchiveLoader.NumericalSort(_fileNames);
+                    ArchiveLoader.NumericalSort(_fileNames);
 
-                // The file count may be out-of-sync between the extractor and _filenames, due to skipped folders above
-                // Load the first 5 files (if possible) before returning to GUI
-                initialFilesToRead = Math.Min(5, _fileNames.Count()); // extractor.FilesCount);
-                for (int j = 0; j < initialFilesToRead; j++)
-                {
-                    ExtractFile(extractor, j, comicFile, _fileNames);
+                    // TODO need to check validity and keep going if necessary. May result in loading everything synchronous...
+                    // The file count may be out-of-sync between the extractor and _filenames, due to skipped folders above
+                    // Load the first 5 files (if possible) before returning to GUI
+                    initialFilesToRead = Math.Min(5, _fileNames.Count()); // extractor.FilesCount);
+                    for (int j = 0; j < initialFilesToRead; j++)
+                    {
+                        ExtractFile(extractor, j, comicFile, _fileNames);
+                    }
                 }
+            }
+            catch (SevenZipArchiveException ex)
+            {
+                returnValue.Error = "Extractor failed to handle the archive.";
+                return returnValue;
             }
 
             // Load remaining files in the background
