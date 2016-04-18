@@ -304,6 +304,7 @@ namespace CSharpComicViewer.WPF
         /// <param name="eventArgs"></param>
         public void ApplicationExit(object sender, CancelEventArgs eventArgs)
         {
+            Cleanup(); // Make sure stuff is shutdown, specifically the async load thread
             SaveResumeToConfiguration();
             SaveConfiguration();
         }
@@ -1622,6 +1623,11 @@ namespace CSharpComicViewer.WPF
         private void DoShowText(object sender, RoutedEventArgs e)
         {
             ShowText();
+        }
+
+        private void Cleanup()
+        {
+            _fileLoader.Cleanup();
         }
     }
 }

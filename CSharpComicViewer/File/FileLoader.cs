@@ -57,6 +57,15 @@ namespace CSharpComicViewer.File
         private ArchiveLoadAsync _asyncLoader;
 
         /// <summary>
+        /// Force cleanup, esp. on exception.
+        /// </summary>
+        public void Cleanup()
+        {
+            if (_asyncLoader != null)
+                _asyncLoader.Dispose();
+        }
+
+        /// <summary>
         /// Loads the specified files.
         /// </summary>
         /// <param name="files">The files.</param>
