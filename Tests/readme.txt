@@ -16,3 +16,7 @@ show only the first valid file. Loading the archive should show the first valid 
 60821-Bye_Bye_Love_Letter_SL.zip : this file is the first instance I encountered where
 a FOLDER had an image extension. I.e. the folder inside the archive has a .PNG 
 extension. The code was changed to not treat folders as images.
+
+empty.zip : empty file masquerading as an archive
+
+garbage.zip : a truly corrupted ZIP file
