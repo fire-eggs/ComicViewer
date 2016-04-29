@@ -68,11 +68,11 @@ namespace CSharpComicLoader.File
 
         private void NukeThread()
         {
-            if (_t1 != null)
-            {
-                _t1.Abort();
-                _t1 = null;
-            }
+            // Insure the async thread is dead
+            if (_t1 == null) 
+                return;
+            _t1.Abort();
+            _t1 = null;
         }
 
         private Thread _t1;
@@ -89,7 +89,7 @@ namespace CSharpComicLoader.File
                 return returnValue;
             }
 
-            NukeThread();
+            NukeThread(); // kill any unfinished async load
 
             var comicFile = new ComicFile {Location = files[0]};
             returnValue.ComicBook.Add(comicFile);
@@ -125,7 +125,7 @@ namespace CSharpComicLoader.File
                     }
                 }
             }
-            catch (SevenZipArchiveException ex)
+            catch (SevenZipArchiveException)
             {
                 returnValue.Error = "Extractor failed to handle the archive.";
                 return returnValue;

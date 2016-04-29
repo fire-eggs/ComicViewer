@@ -31,15 +31,14 @@ namespace CSharpComicLoader.File
 	public class ImageLoader : IFileLoader
 	{
 		/// <summary>
-		/// Loads the comic book.
+		/// Loads the comic book from a set of separate image files.
 		/// </summary>
 		/// <param name="files">The files.</param>
-		/// <returns>A ComicBook where the files are part of a single ComicFile.</returns>
+		/// <returns>A ComicBook where each file is a separate ComicFile.</returns>
 		public LoadedFilesData LoadComicBook(string[] files)
 		{
 			var returnValue = new LoadedFilesData();
 			returnValue.ComicBook = new ComicBook();
-			var comicFile = new ComicFile();
 
 			try
 			{
@@ -51,7 +50,7 @@ namespace CSharpComicLoader.File
                         continue; // KBR just skip the file
                     }
 
-                    // KBR TODO wasn't this check already made? [not from the Q&D multi-file loader...]
+                    // KBR Might appear duplicated check, but wasn't performed from the Q&D multi-file loader...
 				    if (!Utils.ValidateImageFileExtension(file))
                         continue; // KBR not a supported image extension, skip it
 
@@ -61,7 +60,12 @@ namespace CSharpComicLoader.File
                         {
                             var b = new byte[fs.Length];
                             fs.Read(b, 0, b.Length);
-                            comicFile.Add(b);
+
+                            // Change to prior behavior: load each image as a separate ComicFile. This way we
+                            // have a per-image location value we can display.
+                            var comicFile = new ComicFile {b};
+                            comicFile.Location = file;
+                            returnValue.ComicBook.Add(comicFile);
                         }
                         catch (Exception)
                         {
@@ -71,9 +75,6 @@ namespace CSharpComicLoader.File
                     }
 				}
 
-				//return the ComicBook on success
-			    comicFile.Location = ""; // KBR TODO comicFile is now a collection of images, but each image needs to have its own location
-                returnValue.ComicBook.Add(comicFile);
                 return returnValue;
 			}
 			catch (Exception e)
