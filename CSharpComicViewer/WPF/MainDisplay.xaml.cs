@@ -232,6 +232,7 @@ namespace CSharpComicViewer.WPF
         {
             InitializeComponent();
             _openingFile = openingFile;
+            InitMRU();
         }
 
         /// <summary>
@@ -376,6 +377,25 @@ namespace CSharpComicViewer.WPF
                 Bookmark data = _comicBook.GetBookmark();
                 Configuration.Resume = data;
             }
+        }
+
+        private void InitMRU()
+        {
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string userFilePath = Path.Combine(localAppData, "C# Comicviewer");
+
+            MyRecentFileList.UseXmlPersister(Path.Combine(userFilePath, "recentfiles.xml"));
+            MyRecentFileList.MenuClick += (s, e) => LoadMRUFile(e.Filepath);
+        }
+
+        /// <summary>
+        /// User has selected an entry from the Recent Files list. Try to open that file.
+        /// </summary>
+        /// <param name="path"></param>
+        private void LoadMRUFile(string path)
+        {
+            string[] files = { path };
+            LoadAndDisplayComic(files); 
         }
 
         #region Bookmarks
@@ -1293,6 +1313,7 @@ namespace CSharpComicViewer.WPF
                     if (!System.IO.File.Exists(file))
                     {
                         ShowMessage("One or more archives not found");
+                        MyRecentFileList.RemoveFile(file);
                         return;
                     }
                 }
@@ -1332,6 +1353,9 @@ namespace CSharpComicViewer.WPF
                     ShowMessage("Unable to load first few images");
                     return; // TODO need to be able to continue / recover
                 }
+
+                MyRecentFileList.InsertFile(files[0]);
+
                 DisplayImage(page, ImageStartPosition.Top);
 
                 foreach (ComicFile comicFile in _comicBook)
@@ -1353,10 +1377,12 @@ namespace CSharpComicViewer.WPF
             else if (!string.IsNullOrEmpty(_fileLoader.Error))
             {
                 ShowMessage(_fileLoader.Error);
+                MyRecentFileList.RemoveFile(files[0]);
             }
             else
             {
                 ShowMessage("No supported files found.");
+                MyRecentFileList.RemoveFile(files[0]);
             }
         }
 

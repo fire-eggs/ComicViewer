@@ -21,7 +21,8 @@
 	x:Class="CSharpComicViewer.WPF.MainDisplay" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	Title="C# comicviewer"
+    xmlns:wpf="clr-namespace:CSharpComicViewer.WPF"
+    Title="C# comicviewer"
 	Background="WhiteSmoke"
 	Height="300"
 	Width="300"
@@ -48,6 +49,7 @@
 					<MenuItem Header="Next file" InputGestureText="Alt + Pg Dn" Click="NextFile_Click" />
 					<MenuItem Header="Previous file" InputGestureText="Alt + Pg Up" Click="PreviousFile_Click" />
                     <MenuItem Header="Show Text" InputGestureText="N" Click="DoShowText"></MenuItem>
+                    <wpf:RecentFileList x:Name="MyRecentFileList"/>
 					<MenuItem Header="Exit" InputGestureText="X" Click="Exit_Click" />
 				</MenuItem>
 				<MenuItem
