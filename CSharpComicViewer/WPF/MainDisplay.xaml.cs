@@ -32,6 +32,8 @@ using CSharpComicLoader.Comic;
 using CSharpComicViewer.File;
 using Microsoft.Win32;
 
+// ReSharper disable InconsistentNaming
+
 namespace CSharpComicViewer.WPF
 {
     /// <summary>
@@ -42,11 +44,8 @@ namespace CSharpComicViewer.WPF
         #region Properties
 
         /// <summary>
-        /// Gets or sets the opening file.
+        /// The file path specified on the command line when the app was run.
         /// </summary>
-        /// <value>
-        /// The opening file.
-        /// </value>
         private readonly string _openingFile;
 
         /// <summary>
@@ -263,7 +262,8 @@ namespace CSharpComicViewer.WPF
                 SetWindowMode(WindowMode.Windowed);
             }
 
-            //gray out resume last file if the files dont't exist
+            // TODO can more than one file be resumed? If *any* of them exist, should be able to resume? Why not start disabled and enable if possible?
+            // Disable 'resume last file' if the files don't exist
             if (Configuration.Resume != null)
             {
                 foreach (string file in Configuration.Resume.Files)
@@ -288,7 +288,8 @@ namespace CSharpComicViewer.WPF
             //open file (when opening associated by double click)
             if (_openingFile != null)
             {
-                LoadAndDisplayComic(false);
+                string[] files = {_openingFile};
+                LoadAndDisplayComic(files);
             }
             else
             {
@@ -502,7 +503,7 @@ namespace CSharpComicViewer.WPF
                         _mouseIsHidden = false;
                     }
 
-                    LoadAndDisplayComic(true);
+                    LoadAndDisplayComic();
                     break;
                 case Key.M:
                     WindowState = WindowState.Minimized;
@@ -668,30 +669,25 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The e.</param>
         private void OnArrowKey(Key e)
         {
+            if (DisplayedImage.Source == null)
+                return; 
+
             const int scrollAmount = 50;
 
-            //scroll down
-            if (e == Key.Down && DisplayedImage.Source != null)
+            switch (e)
             {
-                ScrollField.ScrollToVerticalOffset(ScrollField.VerticalOffset + scrollAmount);
-            }
-
-            //scroll up
-            if (e == Key.Up && DisplayedImage.Source != null)
-            {
-                ScrollField.ScrollToVerticalOffset(ScrollField.VerticalOffset - scrollAmount);
-            }
-
-            //scroll right
-            if (e == Key.Right && DisplayedImage.Source != null)
-            {
-                ScrollField.ScrollToHorizontalOffset(ScrollField.HorizontalOffset + scrollAmount);
-            }
-
-            //scroll left
-            if (e == Key.Left && DisplayedImage.Source != null)
-            {
-                ScrollField.ScrollToHorizontalOffset(ScrollField.HorizontalOffset - scrollAmount);
+                case Key.Down:
+                    ScrollField.ScrollToVerticalOffset(ScrollField.VerticalOffset + scrollAmount);
+                    break;
+                case Key.Up:
+                    ScrollField.ScrollToVerticalOffset(ScrollField.VerticalOffset - scrollAmount);
+                    break;
+                case Key.Right:
+                    ScrollField.ScrollToHorizontalOffset(ScrollField.HorizontalOffset + scrollAmount);
+                    break;
+                case Key.Left:
+                    ScrollField.ScrollToHorizontalOffset(ScrollField.HorizontalOffset - scrollAmount);
+                    break;
             }
 
             if (ScrollField.VerticalOffset > ScrollField.ScrollableHeight || ScrollField.VerticalOffset < 0)
@@ -719,7 +715,7 @@ namespace CSharpComicViewer.WPF
                 _previousPageCount = 2;
                 if (DisplayedImage.Width > ScrollField.ViewportWidth)
                 {
-                    //image widther then screen
+                    // image wider than screen
                     if (ScrollField.HorizontalOffset == ScrollField.ScrollableWidth && ScrollField.VerticalOffset == ScrollField.ScrollableHeight)
                     {
                         //Can count down for next page
@@ -788,6 +784,7 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.Input.MouseWheelEventArgs"/> instance containing the event data.</param>
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            // TODO not sure if this makes sense but I'd need a mouse wheel to test
             OnMouseWheel(sender, e);
         }
 
@@ -912,7 +909,7 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            LoadAndDisplayComic(true);
+            LoadAndDisplayComic();
         }
 
         /// <summary>
@@ -972,7 +969,6 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-//			ApplicationExit(sender, null);
             Application.Current.Shutdown();
         }
 
@@ -1121,41 +1117,22 @@ namespace CSharpComicViewer.WPF
                 UpdatePageInformation();
             }
 
-            switch (scrollTo.ToString())
+            switch (scrollTo)
             {
-                case "Top":
-                    {
-                        ScrollField.ScrollToTop();
-                        ScrollField.ScrollToLeftEnd();
-                        break;
-                    }
+                case ImageStartPosition.Top:
+                    ScrollField.ScrollToTop();
+                    ScrollField.ScrollToLeftEnd();
+                    break;
 
-                case "Bottom":
-                    {
-                        ScrollField.ScrollToBottom();
-                        ScrollField.ScrollToRightEnd();
-                        break;
-                    }
-
-                default:
-                    {
-                        break;
-                    }
+                case ImageStartPosition.Bottom:
+                    ScrollField.ScrollToBottom();
+                    ScrollField.ScrollToRightEnd();
+                    break;
             }
 
             BitmapImage bitmapimage = GetImage(imageAsBytes);
 
             _imageUtils.ObjectValue = imageAsBytes;
-
-            // KBR TODO lets try skipping this altogether - maybe reduce memory footprint
-            //try
-            //{
-            //    // This can fail when viewing an archive, and a large image.
-            //    Background = _imageUtils.BackgroundColor;
-            //}
-            //catch
-            //{
-            //}
 
             try
             {
@@ -1170,6 +1147,7 @@ namespace CSharpComicViewer.WPF
             }
             catch
             {
+                // TODO test and establish useful response
             }
 
             DisplayedImage.Source = bitmapimage;
@@ -1265,34 +1243,28 @@ namespace CSharpComicViewer.WPF
         }
 
         /// <summary>
-        /// Load archive(s) and display first page
+        /// Provide dialog for user to select files; load archive(s) and display first page
         /// </summary>
-        /// <param name="askOpenFileDialog">Should file dialog be used?</param>
-        public void LoadAndDisplayComic(bool askOpenFileDialog)
+        public void LoadAndDisplayComic()
         {
-            string[] files = { _openingFile };
-
-            if (askOpenFileDialog)
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (_comicBook != null)
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                if (_comicBook != null)
-                {
-                    Bookmark bookmark = _comicBook.GetBookmark();
-                    if (bookmark != null && !string.IsNullOrWhiteSpace(bookmark.GetCurrentFileDirectoryLocation())) // TODO fails when opening image files (not archives)
-                        openFileDialog.InitialDirectory = FirstValidFolder(bookmark.GetCurrentFileDirectoryLocation());
-                }
-
-                openFileDialog.Filter = Utils.FileLoaderFilter;
-                openFileDialog.Multiselect = true;
-                openFileDialog.ShowDialog();
-
-                if (openFileDialog.FileNames.Length <= 0)
-                {
-                    return;
-                }
-
-                files = openFileDialog.FileNames;
+                Bookmark bookmark = _comicBook.GetBookmark();
+                if (bookmark != null && !string.IsNullOrWhiteSpace(bookmark.GetCurrentFileDirectoryLocation())) // TODO fails when opening image files (not archives)
+                    openFileDialog.InitialDirectory = FirstValidFolder(bookmark.GetCurrentFileDirectoryLocation());
             }
+
+            openFileDialog.Filter = Utils.FileLoaderFilter;
+            openFileDialog.Multiselect = true;
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileNames.Length <= 0)
+            {
+                return;
+            }
+
+            string[] files = openFileDialog.FileNames;
 
             LoadAndDisplayComic(files);
         }
