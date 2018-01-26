@@ -12,7 +12,7 @@ A manga/comicbook reader in C#, .NET 4.0 and WPF.  View images on disk, or from 
 
 _Features_
 
-For basic features, please see the SourceForge project at the above link.
+For basic features, please see either project at the above links.
 
 Features Specific to this Fork (in no particular order)
 
@@ -27,3 +27,11 @@ Features Specific to this Fork (in no particular order)
 - Asynchronous archive loading (don't have to wait for the entire zip file to load)
 - 01/03/2016: if you open a *single* image in a folder, the program will now open *all* images in the folder.
 - 04/02/2016: attempt to handle archives-containing-archives. Not asynchronous.
+- 01/26/2018: image files would stop loading on exception (e.g. permissions, read error)
+
+_Install_
+
+1. Copy the four files from the Executable folder to a directory on your system. 
+2. Run csharp-comicviewer.exe. 
+
+Should work on Windows 7 or later without any additional steps.
