@@ -40,49 +40,40 @@ namespace CSharpComicLoader.File
 			var returnValue = new LoadedFilesData();
 			returnValue.ComicBook = new ComicBook();
 
-			try
+			foreach (string file in files)
 			{
-				foreach (string file in files)
+                if (!System.IO.File.Exists(file))
+                {
+                    returnValue.Error = "One or more files could not be read, and were skipped";
+                    continue; // KBR just skip the file
+                }
+
+                // KBR Might appear duplicated check, but wasn't performed from the Q&D multi-file loader...
+				if (!Utils.ValidateImageFileExtension(file))
+                    continue; // KBR not a supported image extension, skip it
+
+				try
 				{
-                    if (!System.IO.File.Exists(file))
-                    {
-                        returnValue.Error = "One or more files could not be read, and were skipped";
-                        continue; // KBR just skip the file
-                    }
-
-                    // KBR Might appear duplicated check, but wasn't performed from the Q&D multi-file loader...
-				    if (!Utils.ValidateImageFileExtension(file))
-                        continue; // KBR not a supported image extension, skip it
-
                     using (var fs = System.IO.File.OpenRead(file))
                     {
-                        try
-                        {
-                            var b = new byte[fs.Length];
-                            fs.Read(b, 0, b.Length);
+                        var b = new byte[fs.Length];
+                        fs.Read(b, 0, b.Length);
 
-                            // Change to prior behavior: load each image as a separate ComicFile. This way we
-                            // have a per-image location value we can display.
-                            var comicFile = new ComicFile {b};
-                            comicFile.Location = file;
-                            returnValue.ComicBook.Add(comicFile);
-                        }
-                        catch (Exception)
-                        {
-                            // couldn't read the file, just skip it
-                            returnValue.Error = "One or more files could not be read, and were skipped";
-                        }
+                        // Change to prior behavior: load each image as a separate ComicFile. This way we
+                        // have a per-image location value we can display.
+                        var comicFile = new ComicFile { b };
+                        comicFile.Location = file;
+                        returnValue.ComicBook.Add(comicFile);
                     }
-				}
+                }
+				catch (Exception)
+				{
+                    // couldn't read or access the file, just skip it
+                    returnValue.Error = "One or more files could not be read, and were skipped";
+                }
+			}
 
-                return returnValue;
-			}
-			catch (Exception e)
-			{
-				//show error and return nothing
-				returnValue.Error = e.Message;
-				return returnValue;
-			}
+            return returnValue;
 		}
 
         // A quick-and-dirty "load all image files in a folder"
