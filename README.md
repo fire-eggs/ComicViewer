@@ -27,6 +27,7 @@ Features Specific to this Fork (in no particular order)
 - Asynchronous archive loading (don't have to wait for the entire zip file to load)
 - 01/03/2016: if you open a *single* image in a folder, the program will now open *all* images in the folder.
 - 04/02/2016: attempt to handle archives-containing-archives. Not asynchronous.
+- 04/30/2016: most-recently-used file list under File menu
 - 01/26/2018: image files would stop loading on exception (e.g. permissions, read error)
 
 _Install_
