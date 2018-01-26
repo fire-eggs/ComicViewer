@@ -3,6 +3,8 @@ ComicViewer
 
 A fork of Rutger Spruyt's "C# ComicViewer". See http://sourceforge.net/projects/csharpcomicview/
 
+Now at http://riuujin.github.io/charpcomicviewer-sf
+
 _Description_
 
 A manga/comicbook reader in C#, .NET 4.0 and WPF.  View images on disk, or from within Zip/rar/cbr/cbz/7z files. Uses 
