@@ -478,8 +478,9 @@ namespace CSharpComicViewer.WPF
             switch (e.Key)
             {
                 case Key.X:
+                case Key.Q:
+                case Key.Escape:
                     Application.Current.Shutdown();
-//                    ApplicationExit(null, null);
                     break;
                 case Key.R:
                     if (ResumeFile_RightClick.IsEnabled)
@@ -1554,7 +1555,7 @@ namespace CSharpComicViewer.WPF
         private void GenerateKeyHints()
         {
             _keyHints = new List<KeyHint>();
-            var keys = new[] { "R", "L", "T", "D", "G", "I", "N", "W", "M", "X", " ",
+            var keys = new[] { "R", "L", "T", "D", "G", "I", "N", "W", "M", "X, Q, Esc", " ",
                                "Arrow keys", "Page Down", "Page Up", "Alt + Page Down", "Alt + Page Up",
                                "Alt + Home", "Home", "Alt + End", "End"
                              };
