@@ -296,7 +296,7 @@ namespace CSharpComicViewer.WPF
                 _comicBook = new ComicBook(); // KBR use an empty placeholder book
             }
 
-            KeyGrid.ItemsSource = KeyHints; // TODO consider using an InformationText and show on the '?' key. Problem: keys are not in a string!
+            KeyGrid.ItemsSource = KeyHints;
         }
 
         /// <summary>
@@ -468,6 +468,9 @@ namespace CSharpComicViewer.WPF
         #endregion
 
         #region Keyboard & Mouse
+
+        private static bool _keygrid_shown = false;
+
         /// <summary>
         /// Called when [key down].
         /// </summary>
@@ -475,6 +478,12 @@ namespace CSharpComicViewer.WPF
         /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs"/> instance containing the event data.</param>
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
+            if (_keygrid_shown)
+            {
+                KeyGrid.Visibility = Visibility.Collapsed;
+                _keygrid_shown = false;
+            }
+
             switch (e.Key)
             {
                 case Key.X:
@@ -529,6 +538,11 @@ namespace CSharpComicViewer.WPF
                     break;
                 case Key.G:
                     GotoPage();
+                    break;
+                case Key.OemQuestion:
+                case Key.F1:
+                    KeyGrid.Visibility = Visibility.Visible;
+                    _keygrid_shown = true;
                     break;
             }
         }
@@ -1252,7 +1266,7 @@ namespace CSharpComicViewer.WPF
             if (_comicBook != null)
             {
                 Bookmark bookmark = _comicBook.GetBookmark();
-                if (bookmark != null && !string.IsNullOrWhiteSpace(bookmark.GetCurrentFileDirectoryLocation())) // TODO fails when opening image files (not archives)
+                if (bookmark != null && !string.IsNullOrWhiteSpace(bookmark.GetCurrentFileDirectoryLocation())) 
                 {
                     var trial = FirstValidFolder(bookmark.GetCurrentFileDirectoryLocation());
                     // 20190930 the OpenFileDialog falls over if the path is on a removed device
@@ -1557,7 +1571,7 @@ namespace CSharpComicViewer.WPF
             _keyHints = new List<KeyHint>();
             var keys = new[] { "R", "L", "T", "D", "G", "I", "N", "W", "M", "X, Q, Esc", " ",
                                "Arrow keys", "Page Down", "Page Up", "Alt + Page Down", "Alt + Page Up",
-                               "Alt + Home", "Home", "Alt + End", "End"
+                               "Alt + Home", "Home", "Alt + End", "End", " ", "?, F1"
                              };
             var funcs = new[] {
                                 "Resume last file",
@@ -1579,7 +1593,9 @@ namespace CSharpComicViewer.WPF
                                 "First page of current file",
                                 "First page of all files",
                                 "Last page of current file",
-                                "Last page of all files"
+                                "Last page of all files",
+                                " ",
+                                "Show this key list (space to dismiss)"
                                  };
             for (int i = 0; i < keys.Length; i++)
                 _keyHints.Add(new KeyHint { Key = keys[i], Function = funcs[i]});
