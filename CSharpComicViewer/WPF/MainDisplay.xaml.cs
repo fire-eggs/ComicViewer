@@ -1252,7 +1252,11 @@ namespace CSharpComicViewer.WPF
             {
                 Bookmark bookmark = _comicBook.GetBookmark();
                 if (bookmark != null && !string.IsNullOrWhiteSpace(bookmark.GetCurrentFileDirectoryLocation())) // TODO fails when opening image files (not archives)
-                    openFileDialog.InitialDirectory = FirstValidFolder(bookmark.GetCurrentFileDirectoryLocation());
+                {
+                    var trial = FirstValidFolder(bookmark.GetCurrentFileDirectoryLocation());
+                    // 20190930 the OpenFileDialog falls over if the path is on a removed device
+                    openFileDialog.InitialDirectory = Directory.Exists(trial) ? trial : "";
+                }
             }
 
             openFileDialog.Filter = Utils.FileLoaderFilter;
