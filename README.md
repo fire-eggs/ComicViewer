@@ -1,3 +1,9 @@
+**With a Little Help From ...**
+
+![logo1](Files/jetbrains_sm.png) - [JetBrains](https://www.jetbrains.com/) : the Acme of .NET tool suites!
+
+![logo2](Files/deleaker_logo.png) - [Deleaker](https://www.deleaker.com) : the _best_ tool for finding memory, GDI and other leaks!
+
 ComicViewer
 ===========
 
